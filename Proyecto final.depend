@@ -1,0 +1,132 @@
+# depslib dependency file v1.0
+1603934482 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\main.cpp
+	<iostream>
+	"rlutil.h"
+	"interfaz.h"
+	"menu.h"
+	"clases.h"
+	"ventas.h"
+	"validaciones.h"
+	"precios.h"
+	"stock.h"
+	"clientes.h"
+	"config.h"
+
+1593748668 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\rlutil.h
+	<iostream>
+	<string>
+	<cstdio>
+	<stdio.h>
+	<string.h>
+	<windows.h>
+	<conio.h>
+	<termios.h>
+	<unistd.h>
+	<sys/ioctl.h>
+	<sys/types.h>
+	<sys/time.h>
+
+1603314384 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\interfaz.h
+
+1603403045 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\interfaz.cpp
+	<iostream>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<ctime>
+	"rlutil.h"
+	"interfaz.h"
+
+1603935506 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\menu.cpp
+	<iostream>
+	"rlutil.h"
+	"interfaz.h"
+	"menu.h"
+	"clases.h"
+	"ventas.h"
+	"precios.h"
+	"stock.h"
+	"clientes.h"
+	"config.h"
+
+1603934136 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\menu.h
+
+1603848502 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clases.h
+
+1603939836 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\ventas.cpp
+	<iostream>
+	<cstdlib>
+	"rlutil.h"
+	"interfaz.h"
+	"clases.h"
+	"validaciones.h"
+	"ventas.h"
+	"clientes.h"
+	"stock.h"
+
+1603920432 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\validaciones.cpp
+	<iostream>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<ctime>
+	"rlutil.h"
+	"interfaz.h"
+	"clases.h"
+
+1603925710 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\ventas.h
+
+1603315953 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\validaciones.h
+
+1603837044 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\precios.cpp
+	<iostream>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<ctime>
+	"rlutil.h"
+	"interfaz.h"
+	"clases.h"
+	"precios.h"
+
+1603238820 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\precios.h
+
+1603928364 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\stock.cpp
+	<iostream>
+	<cstdlib>
+	"rlutil.h"
+	"clases.h"
+	"stock.h"
+	"interfaz.h"
+
+1603928364 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\stock.h
+
+1603928036 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clientes.h
+
+1603928036 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clientes.cpp
+	<iostream>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<ctime>
+	"rlutil.h"
+	"interfaz.h"
+	"clases.h"
+	"clientes.h"
+
+1603934482 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\config.cpp
+	<iostream>
+	<cstdio>
+	<cstdlib>
+	<cstring>
+	<ctime>
+	"rlutil.h"
+	"interfaz.h"
+	"clases.h"
+	"clientes.h"
+	"ventas.h"
+	"precios.h"
+	"config.h"
+
+1603934502 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\config.h
+
