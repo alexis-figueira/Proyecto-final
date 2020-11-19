@@ -7,6 +7,10 @@ void menu_ventas ();
 
 void menu_stock ();
 
+void menu_articulos ();
+
+void submenu_articulos ();
+
 void menu_clientes ();
 
 void menu_precios ();

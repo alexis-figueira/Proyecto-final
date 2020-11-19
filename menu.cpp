@@ -10,28 +10,25 @@ using namespace rlutil ;
 #include "stock.h"
 #include "clientes.h"
 #include "config.h"
+#include "articulo.h"
 
-///const int ancho_formato = 80, alto_formato=25 ;
 
 void AperturaArchivos (){
     FILE *f;
-    f=fopen("archivoventas.dat","ab");
+    f=fopen(ArchivoVentas,"ab");
     if (f==NULL){
         return ;
     }
     fclose (f);
-    f=fopen ("archivoprecios.dat","ab");
+
+    f=fopen (ArchivoClientes,"ab");
     if (f==NULL){
         return ;
     }
     fclose (f);
-    f=fopen ("archivostock.dat","ab");
-    if (f==NULL){
-        return ;
-    }
-    fclose (f);
-    f=fopen ("archivoclientes.dat","ab");
-    if (f==NULL){
+
+    f=fopen (ArchivoArticulo,"ab");
+    if(f==NULL){
         return ;
     }
     fclose (f);
@@ -45,11 +42,10 @@ void menu_principal (){
         devolucion ("ABASTECER ORTOPÉDICO","AZUL", ancho_formato, alto_formato);
         titulo ("ABASTECER ORTOPÉDICO","AZUL",ancho_formato);
         msj ("01. Menú ventas.", 2,ancho_formato) ; cout << endl ;
-        msj ("02. Menú stock." , 2,ancho_formato) ; cout << endl ;
-        msj ("03. Menú clientes.", 2,ancho_formato); cout << endl ;
-        msj ("04. Menú precios.", 2,ancho_formato); cout << endl ;
-        msj ("05. Registros.", 2,ancho_formato) ; cout << endl ;
-        msj ("06. Ajustes.", 2,ancho_formato); cout << endl ;
+        msj ("02. Menú clientes.", 2,ancho_formato); cout << endl ;
+        msj ("03. Menú artículos.", 2,ancho_formato); cout << endl ;
+        msj ("04. Registros.", 2,ancho_formato) ; cout << endl ;
+        msj ("05. Ajustes.", 2,ancho_formato); cout << endl ;
 
         guiones (ancho_formato);
 
@@ -64,18 +60,15 @@ void menu_principal (){
                 menu_ventas ();
                 break ;
             case '2':
-                menu_stock ();
-                break ;
-            case '3':
                 menu_clientes ();
                 break ;
-            case '4':
-                menu_precios ();
+            case '3':
+                menu_articulos ();
                 break ;
-            case '5':
+            case '4':
                 menu_registros ();
                 break ;
-            case '6':
+            case '5':
                 menu_ajustes ();
                 break ;
             case '0':
@@ -114,301 +107,231 @@ void menu_ventas (){
 
         msj ("Elija una opción: ", 2, ancho_formato) ;
         cin >> opcion_menu ;
-
         switch (*opcion_menu) {
-
-            {case '1': /// Nueva venta
-                char opc;
-                bool grabo ;
-                ventas venta1 ;
-                grabo = venta1.SetNuevaVenta () ;
-                if (grabo==false){
-                    return ;
-                }
-                cls ();
-
-                devolucion ("VENTAS","MAGENTA", ancho_formato, alto_formato);
-                titulo ("VENTAS","MAGENTA", ancho_formato);
-
-                gotoxy (1,alto_formato /2);
-
-                msj ("Confirme la venta (S/N): ",2,ancho_formato);
-                cin >> opc ;
-
-                while (opc!='s' && opc!='S' && opc!='n' && opc!='N'){
-                    devolucion ("CARÁCTER INVÁLIDO","ROJO", ancho_formato, alto_formato);
-                    titulo ("CARÁCTER INVÁLIDO","ROJO", ancho_formato);
-                    anykey ();
-                    devolucion ("VENTAS","MAGENTA", ancho_formato, alto_formato);
-                    titulo ("VENTAS","MAGENTA", ancho_formato);
-                    borrar_renglon (alto_formato/2);
-                    gotoxy (1,alto_formato /2);
-                    msj ("Confirme la venta (S/N): ",2,ancho_formato);
-                    cin >> opc ;
-                }
-
-                if (opc =='s' || opc=='S'){
-                    bool grabo ;
-                    int pos;
-                    clientes cli ;
-                    grabo = GuardarVenta(venta1);
-                    if (grabo ==true){
-                        devolucion ("VENTA REALIZADA","MAGENTA", ancho_formato, alto_formato);
-                        titulo ("VENTA REALIZADA","MAGENTA", ancho_formato);
-                        gotoxy (1, alto_formato/2);
-                        msj ("VENTA CONFIRMADA",2, ancho_formato,"VERDE");
-                        anykey ();
-                        pos = BuscarCliente (venta1.GetIdCliente());
-                        if (pos==-2){
-                            CargarClienteNuevo (venta1);
-                        }else {
-                            if (pos>=0){
-                                cli=LeerCliente (pos);
-                                cli.SetAcumulado (venta1.GetValorVenta ());
-                                GuardarCliente (cli,pos);
-                            }
-
-                        }
-                    }else {
-                        devolucion ("ERROR AL GRABAR","ROJO", ancho_formato, alto_formato);
-                        titulo ("ERROR AL GRABAR","ROJO", ancho_formato);
-                        anykey ();
-                    }
-
-
-                }else{
-                    devolucion ("VENTA CANCELADA","MAGENTA", ancho_formato, alto_formato);
-                    titulo ("VENTA CANCELADA","MAGENTA", ancho_formato);
-                    gotoxy (1, alto_formato/2);
-                    msj ("VENTA CANCELADA",2, ancho_formato,"ROJO");
-                    anykey ();
-                }
-                CambiarStockArticulo (venta1.GetCodArt(),-1*venta1.GetCant(),venta1.GetEstado());
-            break ;}
-
-            {case '2': /// Cancelar venta
-                int id , pos;
-                char opcion ;
-                ventas reg ;
-                cls ();
-                devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
-                titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
-                gotoxy (1,alto_formato/2);
-                msj ("ingrese el id de la venta que quiere cancelar: ", 2, ancho_formato); cin >> id ;
-                pos =BuscarVenta (id);
-                if (pos==-2){
-                    devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
-                    titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
+        {case '1': /// Nueva venta
+            NuevaVenta();
+        break ;}
+        {case '2': /// Cancelar venta
+            int id , pos;
+            char opcion ;
+            ventas reg ;
+            cls ();
+            devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
+            titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
+            gotoxy (1,alto_formato/2);
+            msj ("ingrese el id de la venta que quiere cancelar: ", 2, ancho_formato); cin >> id ;
+            pos =BuscarVenta (id);
+            if (pos==-2){
+                devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
+                titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
+                anykey ();
+            }else {
+                if (pos==-1){
+                    devolucion ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato, alto_formato);
+                    titulo ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato);
                     anykey ();
                 }else {
-                    if (pos==-1){
-                        devolucion ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato, alto_formato);
-                        titulo ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato);
-                        anykey ();
-                    }else {
-                        reg = LeerVenta (pos);
-                        MostrarVenta (reg);
-                        gotoxy (1, alto_formato-8);
-                        msj ("¿Está seguro de eliminar esta venta?",2,ancho_formato,"ROJO"); cout << endl ;
-                        msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
-                        bool opc = false ;
-                        while (opc==false){
-                            switch (opcion){
-                            case 's':
-                            case 'S':
-                                bool grabo ;
-                                cls ();
-                                anykey ();
-                                reg.CancelarVenta ();
-                                cout << "el estado de la venta es: " ;
-                                cout << reg.GetEstado ();
-                                anykey ();
-                                grabo=GuardarVenta(reg,pos);
-                                MostrarVenta (reg);
-                                if (grabo==true){
-                                    cls ();
-                                    devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
-                                    titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
-                                    gotoxy (1,alto_formato/2);
-                                    msj ("La venta fue dada de baja exitosamenta", 2, ancho_formato,"VERDE") ;
-                                    hidecursor();
-                                    anykey ();
-                                    showcursor ();
-                                }
-
-                                opc=true ;
-                                break ;
-                            case 'n':
-                            case 'N':
+                    reg = LeerVenta (pos);
+                    MostrarVenta (reg);
+                    gotoxy (1, alto_formato-8);
+                    msj ("¿Está seguro de eliminar esta venta?",2,ancho_formato,"ROJO"); cout << endl ;
+                    msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
+                    bool opc = false ;
+                    while (opc==false){
+                        switch (opcion){
+                        case 's':
+                        case 'S':
+                            bool grabo ;
+                            cls ();
+                            reg.CancelarVenta ();
+                            grabo=GuardarVenta(reg,pos);
+                            if (grabo==true){
                                 cls ();
                                 devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
                                 titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
                                 gotoxy (1,alto_formato/2);
-                                msj ("La venta no fue dada de baja", 2, ancho_formato,"VERDE") ;
+                                msj ("La venta fue dada de baja exitosamenta", 2, ancho_formato,"VERDE") ;
                                 hidecursor();
                                 anykey ();
                                 showcursor ();
-                                opc=true ;
-                                break ;
-                            default :
-                                devolucion ("CARÁCTER INVÁLIDO","ROJO",ancho_formato,alto_formato);
-                                titulo ("CARÁCTER INVÁLIDO", "ROJO", ancho_formato);
-                                anykey ();
-                                devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
-                                titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
-                                gotoxy (1, alto_formato-8);
-                                msj ("¿Está seguro de eliminar esta venta?",2,ancho_formato,"ROJO"); cout << endl ;
-                                borrar_renglon(alto_formato-7);
-                                msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
-                                break ;
                             }
+                            opc=true ;
+                            break ;
+                        case 'n':
+                        case 'N':
+                            cls ();
+                            devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
+                            titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
+                            gotoxy (1,alto_formato/2);
+                            msj ("La venta no fue dada de baja", 2, ancho_formato,"VERDE") ;
+                            hidecursor();
+                            anykey ();
+                            showcursor ();
+                            opc=true ;
+                            break ;
+                        default :
+                            devolucion ("CARÁCTER INVÁLIDO","ROJO",ancho_formato,alto_formato);
+                            titulo ("CARÁCTER INVÁLIDO", "ROJO", ancho_formato);
+                            anykey ();
+                            devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
+                            titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
+                            gotoxy (1, alto_formato-8);
+                            msj ("¿Está seguro de eliminar esta venta?",2,ancho_formato,"ROJO"); cout << endl ;
+                            borrar_renglon(alto_formato-7);
+                            msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
+                            break ;
                         }
-
-                        anykey ();
                     }
+
+                    anykey ();
                 }
+            }
+        break ;}
+        {case '3': /// Mostrar una venta
+            int id, x;
+            ventas reg ;
+            cls ();
+            devolucion ("VENTA", "MAGENTA", ancho_formato, alto_formato) ;
+            titulo ("VENTA", "MAGENTA", ancho_formato) ;
+            gotoxy (1,alto_formato/2);
+            msj ("Ingrese el código de la venta que quiere mostrar: ", 2,ancho_formato); cin >> id ;
+            x =BuscarVenta (id);
+            if (x==-2){
+                devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
+                titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
+                anykey ();
+                return ;
+            }
+            if (x==-1){
+                devolucion ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato, alto_formato);
+                titulo ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato);
+                anykey ();
+                return ;
+            }
+
+            reg = LeerVenta (x);
+            if (reg.GetEstado()==false ){
+                devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
+                titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
+                anykey ();
+                return ;
+            }
+            MostrarVenta (reg);
             break ;}
-
-            {case '3': /// Mostrar una venta
-                int id, x;
-                ventas reg ;
+        {case '4': /// Listar ventas
+            int x ;
+            x = ListarVentas ();
+            if (x==-2 || x==-1){
+                devolucion ("OCURRIÓ UN ERROR","ROJO", ancho_formato, alto_formato);
+                titulo ("OCURRIÓ UN ERROR","ROJO", ancho_formato);
+                anykey ();
+            }
+            break ;}
+        {case '5': /// Listar ventas de un cliente
+            bool estado = true ;
+            char opcion ;
+            while (estado==true){
                 cls ();
-                devolucion ("VENTA", "MAGENTA", ancho_formato, alto_formato) ;
-                titulo ("VENTA", "MAGENTA", ancho_formato) ;
-                gotoxy (1,alto_formato/2);
-                msj ("Ingrese el código de la venta que quiere mostrar: ", 2,ancho_formato); cin >> id ;
-                x =BuscarVenta (id);
-                if (x==-2){
-                    devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
-                    titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
-                    anykey ();
-                    return ;
-                }
-                if (x==-1){
-                    devolucion ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato, alto_formato);
-                    titulo ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato);
-                    anykey ();
-                    return ;
-                }
-
-                reg = LeerVenta (x);
-                MostrarVenta (reg);
-                break ;}
-
-            {case '4': /// Listar ventas
-                int x ;
-                x = ListarVentas ();
-                if (x==-2 || x==-1){
-                    devolucion ("OCURRIÓ UN ERROR","ROJO", ancho_formato, alto_formato);
-                    titulo ("OCURRIÓ UN ERROR","ROJO", ancho_formato);
-                    anykey ();
-                }
-                break ;}
-            {case '5': /// Listar ventas de un cliente
-                bool estado = true ;
-                char opcion ;
-                while (estado==true){
+                devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
+                titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
+                msj ("01. Listar por id de cliente.",2,ancho_formato);cout << endl ;
+                msj ("02. Listar por dni.",2,ancho_formato);cout << endl ;
+                msj ("03. Listar por mail.",2,ancho_formato);cout << endl ;
+                guiones (ancho_formato);
+                msj ("00. Volver atrás.",2,ancho_formato,"ROJO");cout << endl ;
+                guiones (ancho_formato);
+                msj ("Ingrese opción: ",2,ancho_formato) ; cin >> opcion ;
+                switch (opcion){
+                {case '1': ///listar por id
+                    int id , dev ;
                     cls ();
                     devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
                     titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-                    msj ("01. Listar por id de cliente.",2,ancho_formato);cout << endl ;
-                    msj ("02. Listar por dni.",2,ancho_formato);cout << endl ;
-                    msj ("03. Listar por mail.",2,ancho_formato);cout << endl ;
-                    guiones (ancho_formato);
-                    msj ("00. Volver atrás.",2,ancho_formato,"ROJO");cout << endl ;
-                    guiones (ancho_formato);
-                    msj ("Ingrese opción: ",2,ancho_formato) ; cin >> opcion ;
-                    switch (opcion){
-                    {case '1': ///listar por id
-                        int id , dev ;
-                        cls ();
-                        devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
-                        titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-                        msj ("Ingrese id del cliente: ",2,ancho_formato); cin >> id ;
-                        dev = ListarClientesPorId (id);
-                        if (dev==0){
-                            devolucion ("No se encontraron ventas de ese id", "ROJO", ancho_formato, alto_formato) ;
-                            titulo ("No se encontraron ventas de ese id", "ROJO", ancho_formato) ;
+                    msj ("Ingrese id del cliente: ",2,ancho_formato); cin >> id ;
+                    dev = ListarClientesPorId (id);
+                    if (dev==0){
+                        devolucion ("No se encontraron ventas de ese id", "ROJO", ancho_formato, alto_formato) ;
+                        titulo ("No se encontraron ventas de ese id", "ROJO", ancho_formato) ;
+                        anykey ();
+                    }else {
+                        if (dev<0){
+                            devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato, alto_formato) ;
+                            titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato) ;
                             anykey ();
-                        }else {
-                            if (dev<0){
-                                devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato, alto_formato) ;
-                                titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato) ;
-                                anykey ();
-                            }
                         }
-                        break ;}
-                    {case '2':///listar por dni
-                        int dni , dev ;
-                        cls ();
-                        devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
-                        titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-                        msj ("Ingrese dni: ",2,ancho_formato); cin >> dni ;
-                        dev = ListarClientesPorDni (dni);
-                        if (dev==0){
-                            devolucion ("No se encontraron ventas con ese id", "ROJO", ancho_formato, alto_formato) ;
-                            titulo ("No se encontraron ventas con ese id", "ROJO", ancho_formato) ;
-                            anykey ();
-                        }else {
-                            if (dev<0){
-                                devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato, alto_formato) ;
-                                titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato) ;
-                                anykey ();
-                            }
-                        }
-                        break ;}
-                    {case '3':///listar por mail
-                        int dev ;
-                        char mail [50];
-                        cls ();
-                        devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
-                        titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-                        msj ("Ingrese Mail: ",2,ancho_formato);
-                        cin.ignore ();
-                        cin.getline (mail,50) ;
-                        dev = ListarClientesPorMail (mail);
-                        if (dev==0){
-                            devolucion ("No se encontraron ventas de ese mail", "ROJO", ancho_formato, alto_formato) ;
-                            titulo ("No se encontraron ventas de ese mail", "ROJO", ancho_formato) ;
-                            anykey ();
-                        }else {
-                            if (dev<0){
-                                devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato, alto_formato) ;
-                                titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato) ;
-                                anykey ();
-                            }
-                        }
-                        break ;}
-                    {case '0':
-                        estado = false ;
-                        break ;}
-                    default :
-                        devolucion ("CARÁCTER INVÁLIDO", "ROJO", ancho_formato, alto_formato) ;
-                        titulo ("CARÁCTER INVÁLIDO", "ROJO", ancho_formato) ;
-                        break ;
-
-
-
-
-
-
                     }
+                    break ;}
+                {case '2':///listar por dni
+                    int dni , dev ;
+                    cls ();
+                    devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
+                    titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
+                    msj ("Ingrese dni: ",2,ancho_formato); cin >> dni ;
+                    dev = ListarClientesPorDni (dni);
+                    if (dev==0){
+                        devolucion ("No se encontraron ventas con ese id", "ROJO", ancho_formato, alto_formato) ;
+                        titulo ("No se encontraron ventas con ese id", "ROJO", ancho_formato) ;
+                        anykey ();
+                    }else {
+                        if (dev<0){
+                            devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato, alto_formato) ;
+                            titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato) ;
+                            anykey ();
+                        }
+                    }
+                    break ;}
+                {case '3':///listar por mail
+                    int dev ;
+                    char mail [50];
+                    cls ();
+                    devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
+                    titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
+                    msj ("Ingrese Mail: ",2,ancho_formato-14);
+                    cin.ignore ();
+                    cin.getline (mail,50) ;
+                    dev = ListarClientesPorMail (mail);
+                    if (dev==0){
+                        devolucion ("No se encontraron ventas de ese mail", "ROJO", ancho_formato, alto_formato) ;
+                        titulo ("No se encontraron ventas de ese mail", "ROJO", ancho_formato) ;
+                        anykey ();
+                    }else {
+                        if (dev<0){
+                            devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato, alto_formato) ;
+                            titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato) ;
+                            anykey ();
+                        }
+                    }
+                    break ;}
+                {case '0':
+                    estado = false ;
+                    break ;}
+                default :
+                    devolucion ("CARÁCTER INVÁLIDO", "ROJO", ancho_formato, alto_formato) ;
+                    titulo ("CARÁCTER INVÁLIDO", "ROJO", ancho_formato) ;
+                    break ;
+
+
+
+
 
 
                 }
-                break ;}
-            {case '0':
-                estado = false ;
-            break ;}
 
-            {default :
-                cls ();
-                devolucion ("ERROR DE OPCIÓN", "ROJO", ancho_formato, alto_formato) ;
-                titulo ("ERROR DE OPCIÓN", "ROJO", ancho_formato) ;
-                hidecursor ();
-                anykey ();
-                showcursor ();
+
+            }
             break ;}
+        {case '0':
+            estado = false ;
+        break ;}
+
+        {default :
+            cls ();
+            devolucion ("ERROR DE OPCIÓN", "ROJO", ancho_formato, alto_formato) ;
+            titulo ("ERROR DE OPCIÓN", "ROJO", ancho_formato) ;
+            hidecursor ();
+            anykey ();
+            showcursor ();
+        break ;}
         }
     }
 }
@@ -422,35 +345,20 @@ void menu_stock (){
         titulo ("CONTROL DE STOCK","VERDE", ancho_formato);
         msj ("01. Agregar stock.", 2,ancho_formato); cout << endl ;
         msj ("02. Reducir stock.", 2, ancho_formato); cout << endl ;
-        /*msj ("03. Dar de baja un artículo.",2,ancho_formato); cout << endl ;
-        msj ("04. Dar de alta un artículo.", 2, ancho_formato); cout << endl ;
-        */
-        msj ("03. Cambiar todo el stock.", 2, ancho_formato); cout << endl ;
-        msj ("04. Mostrar stock.", 2, ancho_formato); cout << endl ;
-
+        msj ("03. Mostrar lista de stock.", 2, ancho_formato); cout << endl ;
         guiones (ancho_formato);
         msj ("00. Volver atrás.", 2, ancho_formato, "ROJO"); cout << endl ;
         guiones (ancho_formato);
         msj ("Elija una opción: ", 2, ancho_formato) ;
         cin >> opcion_menu ;
-        switch (opcion_menu) {
-            case '1': /// ESTA
+        switch (opcion_menu) { //TODO: HACER EL MENU
+            case '1':
                 MenuAgregarStock ();
             break ;
-            case '2': /// ESTA
+            case '2':
                 MenuReducirStock ();
             break ;
-            /*case '3': /// FALTA
-                MenuEstado();
-            break ;
-            case '4': /// FALTA
-                MenuEstado();
-            break ;
-            */
-            case '3': /// HECHO
-                CambiarTodoStock ();
-            break ;
-            case '4': /// HECHO
+            case '3':
                 MostrarListaStock ();
             break ;
             case '0':
@@ -477,8 +385,7 @@ void menu_clientes (){  ///
         titulo ("CLIENTES","AMARILLO", ancho_formato);
         msj ("01. Ver cliente.", 2,ancho_formato); cout << endl ;
         msj ("02. Eliminar cliente.", 2, ancho_formato); cout << endl ;
-        msj ("03. Listar ventas de un cliente", 2,ancho_formato); cout << endl ;
-        msj ("04. Listar clientes.", 2, ancho_formato); cout << endl ;
+        msj ("03. Listar clientes.", 2, ancho_formato); cout << endl ;
         guiones (ancho_formato);
         msj ("00. Volver atrás.", 2, ancho_formato, "ROJO"); cout << endl ;
         guiones (ancho_formato);
@@ -497,8 +404,6 @@ void menu_clientes (){  ///
                 anykey ();
             break ;
             case '3':
-                break;
-            case '4':
                 int x ;
                 x = ListarClientes ();
                 if (x==-2 || x==-1){
@@ -506,8 +411,222 @@ void menu_clientes (){  ///
                     titulo ("OCURRIÓ UN ERROR","ROJO", ancho_formato);
                     anykey ();
                 }
-
                 break ;
+            case '0':
+                estado = false ;
+            break ;
+            default :
+                cls ();
+                devolucion ("ERROR DE OPCIÓN", "ROJO", ancho_formato, alto_formato) ;
+                titulo ("ERROR DE OPCIÓN", "ROJO", ancho_formato) ;
+                hidecursor ();
+                anykey ();
+                showcursor ();
+            break ;
+        }
+    }
+}
+
+void menu_articulos (){
+    char opcion_menu ;
+    bool estado=true ;
+    while (estado==true){
+        cls ();
+        devolucion ("ARTÍCULOS","AMARILLO", ancho_formato, alto_formato);
+        titulo ("ARTÍCULOS","AMARILLO", ancho_formato);
+        msj ("01. Articulos.", 2,ancho_formato); cout << endl ;
+        msj ("02. Stock.", 2, ancho_formato); cout << endl ;
+        msj ("03. Precios.", 2, ancho_formato); cout << endl ;
+        guiones (ancho_formato);
+        msj ("00. Volver atrás.", 2, ancho_formato, "ROJO"); cout << endl ;
+        guiones (ancho_formato);
+        msj ("Elija una opción: ", 2, ancho_formato) ;
+        cin >> opcion_menu ;
+        switch (opcion_menu) { //TODO: HACER EL MENU
+            case '1':
+                submenu_articulos ();
+            break ;
+            case '2':
+                menu_stock ();
+            break ;
+            case '3':
+                menu_precios ();
+            break ;
+            case '0':
+                estado = false ;
+            break ;
+            default :
+                cls ();
+                devolucion ("ERROR DE OPCIÓN", "ROJO", ancho_formato, alto_formato) ;
+                titulo ("ERROR DE OPCIÓN", "ROJO", ancho_formato) ;
+                hidecursor ();
+                anykey ();
+                showcursor ();
+            break ;
+        }
+    }
+}
+
+void submenu_articulos (){
+    char opcion_menu, opcion ;
+    bool estado=true ;
+    int x , pos;
+    articulo reg ;
+    while (estado==true){
+        cls ();
+        devolucion ("ARTÍCULOS","AMARILLO", ancho_formato, alto_formato);
+        titulo ("ARTÍCULOS","AMARILLO", ancho_formato);
+        msj ("01. Agregar un artículo", 2,ancho_formato); cout << endl ;
+        msj ("02. Dar de baja un artículo.", 2, ancho_formato); cout << endl ;
+        msj ("03. Dar de alta un artículo.", 2, ancho_formato); cout << endl ;
+        msj ("04. Mostrar lista de artículos.", 2, ancho_formato); cout << endl ;
+        msj ("05. Mostrar un artículo.", 2, ancho_formato); cout << endl ;
+        guiones (ancho_formato);
+        msj ("00. Volver atrás.", 2, ancho_formato, "ROJO"); cout << endl ;
+        guiones (ancho_formato);
+        msj ("Elija una opción: ", 2, ancho_formato) ;
+        cin >> opcion_menu ;
+        switch (opcion_menu) { //TODO: HACER EL MENU
+            case '1':
+                CargarArticulo ();
+            break ;
+            case '2':
+                cls ();
+                guiones (ancho_formato,6);
+                devolucion ("BAJA DE ARTÍCULO","AMARILLO", ancho_formato, alto_formato);
+                titulo ("BAJA DE ARTÍCULO","AMARILLO", ancho_formato);
+                cout << endl ;
+                msj ("¿Qué artículo quiere dar de baja?: ",2,ancho_formato);
+                cin >> x ;
+
+                pos = BuscarArticulo (x);
+                while (pos<0){
+                    devolucion ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato,alto_formato);
+                    titulo ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato);
+                    anykey ();
+                    devolucion ("BAJA DE ARTÍCULO","AMARILLO",ancho_formato,alto_formato);
+                    titulo ("BAJA DE ARTÍCULO","AMARILLO",ancho_formato);
+                    borrar_renglon (4);
+                    msj ("¿Qué artículo quiere dar de baja?: ", 2, ancho_formato) ;
+                    cin >> x ;
+                    pos=BuscarArticulo (x);
+                }
+                reg = LeerArticulo (pos);
+                gotoxy (1,9);
+                ListarArticulo (reg);
+                guiones (ancho_formato,15);
+                gotoxy (1,12);
+                guiones (ancho_formato);
+                msj ("¿Está seguro de continuar?",2,ancho_formato,"ROJO"); cout << endl ;
+                msj ("(S/N): ",2,ancho_formato);
+                cin >> opcion ;
+
+                while (opcion != 's' && opcion != 'S' &&opcion != 'N' &&opcion != 'n'){
+                    devolucion ("CARÁCTER INVÁLIDO", "ROJO",ancho_formato,alto_formato);
+                    titulo ("CARÁCTER INVÁLIDO", "ROJO",ancho_formato);
+                    anykey ();
+                    devolucion ("BAJA DE ARTÍCULO","AMARILLO",ancho_formato,alto_formato);
+                    titulo ("BAJA DE ARTÍCULO","AMARILLO",ancho_formato);
+                    borrar_renglon (14);
+                    msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
+                }
+                if (opcion=='s' || opcion=='S'){ //TODO: CHEQUEAR SI GRABA O NO
+                    reg.SetEstado (false);
+                    GuardarArticulo (reg,pos);
+                    cls ();
+                    devolucion ("SE REALIZÓ EL CAMBIO","VERDE",ancho_formato,alto_formato);
+                    titulo ("SE REALIZÓ EL CAMBIO","VERDE",ancho_formato);
+                    anykey ();
+                }else {
+                    cls ();
+                    devolucion ("NO SE REALIZÓ EL CAMBIO","ROJO",ancho_formato,alto_formato);
+                    titulo ("NO SE REALIZÓ EL CAMBIO","ROJO",ancho_formato);
+                    anykey ();
+                }
+            break ;
+            case '3':
+                cls ();
+                guiones (ancho_formato,6);
+                devolucion ("ALTA DE ARTÍCULO","AMARILLO", ancho_formato, alto_formato);
+                titulo ("ALTA DE ARTÍCULO","AMARILLO", ancho_formato);
+                cout << endl ;
+                msj ("¿Qué artículo quiere dar de alta?: ",2,ancho_formato);
+                cin >> x ;
+
+                pos = BuscarArticulo (x);
+                while (pos<0){
+                    devolucion ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato,alto_formato);
+                    titulo ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato);
+                    anykey ();
+                    devolucion ("ALTA DE ARTÍCULO","AMARILLO",ancho_formato,alto_formato);
+                    titulo ("ALTA DE ARTÍCULO","AMARILLO",ancho_formato);
+                    borrar_renglon (4);
+                    msj ("¿Qué artículo quiere dar de alta?: ", 2, ancho_formato) ;
+                    cin >> x ;
+                    pos=BuscarArticulo (x);
+                }
+                reg = LeerArticulo (pos);
+                gotoxy (1,9);
+                ListarArticulo (reg);
+                guiones (ancho_formato,15);
+                gotoxy (1,12);
+                guiones (ancho_formato);
+                msj ("¿Está seguro de continuar?",2,ancho_formato,"ROJO"); cout << endl ;
+                msj ("(S/N): ",2,ancho_formato);
+                cin >> opcion ;
+
+                while (opcion != 's' && opcion != 'S' &&opcion != 'N' &&opcion != 'n'){
+                    devolucion ("CARÁCTER INVÁLIDO", "ROJO",ancho_formato,alto_formato);
+                    titulo ("CARÁCTER INVÁLIDO", "ROJO",ancho_formato);
+                    anykey ();
+                    devolucion ("ALTA DE ARTÍCULO","AMARILLO",ancho_formato,alto_formato);
+                    titulo ("ALTA DE ARTÍCULO","AMARILLO",ancho_formato);
+                    borrar_renglon (14);
+                    msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
+                }
+                if (opcion=='s' || opcion=='S'){ //TODO: CHEQUEAR SI GRABA O NO
+                    reg.SetEstado (true);
+                    GuardarArticulo (reg,pos);
+                    cls ();
+                    devolucion ("SE REALIZÓ EL CAMBIO","VERDE",ancho_formato,alto_formato);
+                    titulo ("SE REALIZÓ EL CAMBIO","VERDE",ancho_formato);
+                    anykey ();
+                }else {
+                    cls ();
+                    devolucion ("NO SE REALIZÓ EL CAMBIO","ROJO",ancho_formato,alto_formato);
+                    titulo ("NO SE REALIZÓ EL CAMBIO","ROJO",ancho_formato);
+                    anykey ();
+                }
+            break ;
+            case '4':
+                MostrarListaArticulos ();
+            break ;
+            case '5':
+                cls ();
+                guiones (ancho_formato,6);
+                devolucion ("VER ARTÍCULO","AMARILLO", ancho_formato, alto_formato);
+                titulo ("VER ARTÍCULO","AMARILLO", ancho_formato);
+                cout << endl ;
+                msj ("¿Qué artículo quiere ver?: ",2,ancho_formato);
+                cin >> x ;
+
+                pos = BuscarArticulo (x);
+                while (pos<0){
+                    devolucion ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato,alto_formato);
+                    titulo ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato);
+                    anykey ();
+                    devolucion ("VER ARTÍCULO","AMARILLO",ancho_formato,alto_formato);
+                    titulo ("VER ARTÍCULO","AMARILLO",ancho_formato);
+                    borrar_renglon (4);
+                    msj ("¿Qué artículo quiere ver?: ", 2, ancho_formato) ;
+                    cin >> x ;
+                    pos=BuscarArticulo (x);
+                }
+                reg = LeerArticulo (pos);
+                gotoxy (1,10);
+                MostrarUnArticulo (reg);
+
+                break;
             case '0':
                 estado = false ;
             break ;
@@ -534,29 +653,44 @@ void menu_precios (){
     bool estado =true ;
     while (estado ==true){
         cls ();
-
-        devolucion ("AJUSTES","BLANCO", ancho_formato, alto_formato);
-        titulo ("AJUSTES","BLANCO", ancho_formato);
-
+        articulo reg ;
+        devolucion ("PRECIOS","BLANCO", ancho_formato, alto_formato);
+        titulo ("PRECIOS","BLANCO", ancho_formato);
         msj ("01. Lista de precios.", 2,ancho_formato); cout << endl ;
-        msj ("02. Modificar lista completa de precios.", 2,ancho_formato); cout << endl ;
-        msj ("03. Cambiar precio.", 2, ancho_formato); cout << endl ;
-
+        msj ("02. Mostrar precio de un articulo", 2,ancho_formato); cout << endl ;
+        msj ("03. Cambiar un precio.", 2, ancho_formato); cout << endl ;
         guiones (ancho_formato);
-
         msj ("00. Volver atrás.", 2, ancho_formato, "ROJO"); cout << endl ;
-
         guiones (ancho_formato);
-
         msj ("Elija una opción: ", 2, ancho_formato) ;
         cin >> opcion_menu ;
 
-        switch (opcion_menu){
+        switch (opcion_menu){ //TODO: HACER EL MENU
         case '1':
             MostrarListaPrecios ();
             break;
-        case '2':
-            CrearPrecios ();
+        case'2':
+            int cod_art, pos;
+            cls ();
+            devolucion ("VER PRECIO","BLANCO",ancho_formato,alto_formato);
+            guiones (ancho_formato,6);
+            titulo ("VER PRECIO","BLANCO",ancho_formato);
+            cout << endl ;
+            msj ("Ingrese número de artículo: ", 2, ancho_formato) ; cin >> cod_art;
+            pos = BuscarArticulo (cod_art);
+            while (pos < 0){
+                devolucion ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato,alto_formato);
+                titulo ("NO SE ENCONTRÓ EL ARTÍCULO","ROJO",ancho_formato);
+                anykey ();
+                devolucion ("VER PRECIO","BLANCO",ancho_formato,alto_formato);
+                titulo ("VER PRECIO","BLANCO",ancho_formato);
+                borrar_renglon (4);
+                msj ("Ingrese número de artículo: ", 2, ancho_formato) ; cin >> cod_art;
+                pos = BuscarArticulo (cod_art);
+            }
+            reg = LeerArticulo (pos);
+            gotoxy (1,10);
+            MostrarPrecioArticulo(reg);
             break ;
         case '3':
             CambiarPrecio ();
@@ -582,7 +716,7 @@ void menu_precios (){
 
 }
 
-void menu_ajustes (){
+void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
     char opcion_menu, opcion ;
     bool estado=true, grabo ;
     while (estado==true){
@@ -657,9 +791,9 @@ void menu_ajustes (){
                 }
                 if (opcion== 's'|| opcion =='S'){
                     setColor(BLACK);
-                    grabo=BkpPrecios();
+                    //grabo=BkpPrecios();
                     if (grabo==true){
-                        grabo = BorrarPrecios ();
+                        //grabo = BorrarPrecios ();
                         if (grabo==true){
                             cls ();
                             devolucion ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato, alto_formato);
@@ -691,9 +825,9 @@ void menu_ajustes (){
                 }
                 if (opcion== 's'|| opcion =='S'){
                     setColor(BLACK);
-                    grabo=BkpStock();
+                    //grabo=BkpStock();
                     if (grabo==true){
-                        grabo = BorrarStock ();
+                       // grabo = BorrarStock ();
                         if (grabo==true){
                             cls ();
                             devolucion ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato, alto_formato);
@@ -804,9 +938,9 @@ void menu_recuperar_datos (){
                 }
                 break ;
             case '2': /// Recuperar datos de precios
-                recupero=RecuperarPrecios ();
+                //recupero=RecuperarPrecios ();
                 if(recupero==true){
-                    BorrarBkpPrecios ();
+                    //BorrarBkpPrecios ();
                     cls ();
                     devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
                     titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
@@ -821,9 +955,9 @@ void menu_recuperar_datos (){
                 }
                 break ;
             case '3': /// Recuperar datos de stock
-                recupero=RecuperarStock ();
+                //recupero=RecuperarStock ();
                 if(recupero==true){
-                    BorrarBkpStock ();
+                    //BorrarBkpStock ();
                     cls ();
                     devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
                     titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
@@ -836,7 +970,7 @@ void menu_recuperar_datos (){
                     anykey ();
 
                 }
-                RecuperarStock ();
+                //RecuperarStock ();
                 break ;
             case '4': /// Recuperar datos de clientes
                 recupero=RecuperarClientes ();

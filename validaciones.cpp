@@ -9,6 +9,8 @@ using namespace rlutil;
 #include "interfaz.h"
 #include "clases.h"
 
+
+
 int ValidarTexto (char* texto){
     if (texto[0]== ' ' || texto[0]==NULL){
         return 0 ;
@@ -32,8 +34,6 @@ int ValidarMail (char *texto){
     }
     return 0 ;
 }
-
-
 
 int validar_fecha(int d, int m, int y){
     int i;

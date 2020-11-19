@@ -32,11 +32,15 @@
 			<Add option="-Wall" />
 			<Add option="-fexceptions" />
 		</Compiler>
+		<Unit filename="articulo.cpp" />
+		<Unit filename="articulo.h" />
 		<Unit filename="clases.h" />
 		<Unit filename="clientes.cpp" />
 		<Unit filename="clientes.h" />
 		<Unit filename="config.cpp" />
 		<Unit filename="config.h" />
+		<Unit filename="detallevta.cpp" />
+		<Unit filename="detallevta.h" />
 		<Unit filename="interfaz.cpp" />
 		<Unit filename="interfaz.h" />
 		<Unit filename="main.cpp" />

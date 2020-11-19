@@ -1,5 +1,8 @@
 #ifndef VENTAS_H_INCLUDED
 #define VENTAS_H_INCLUDED
+#define ArchivoVentas "archivoventas.dat"
+
+bool NuevaVenta () ;
 
 bool GuardarVenta (ventas vta);
 

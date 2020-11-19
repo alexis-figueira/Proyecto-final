@@ -1,6 +1,13 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
 
+#define VentasBkp "archivoventas.bkp"
+#define StockBkp "archivostock.bkp"
+#define PreciosBkp "archivoprecios.bkp"
+#define ClientesBkp "archivoclientes.bkp"
+
+
+
 bool BkpClientes ();
 bool BkpPrecios ();
 bool BkpVentas ();

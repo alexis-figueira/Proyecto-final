@@ -10,7 +10,7 @@ using namespace rlutil;
 #include "clases.h"
 #include "clientes.h"
 
-const char *ArchivoClientes = "archivoclientes.dat" ;
+// const char *ArchivoClientes = "archivoclientes.dat" ;
 
 /*
     class clientes{
@@ -49,28 +49,6 @@ void MenuVerCliente (){
     reg = LeerCliente (pos);
     MostrarCliente (reg);
 
-}
-
-void CargarClienteNuevo (ventas vta){ /// YA ESTA
-    clientes cli (0);
-    char texto [50];
-    vta.GetApellido (texto);
-    cli.SetApellido (texto);
-
-    vta.GetNombre (texto);
-    cli.SetNombre (texto);
-
-    vta.GetMail (texto);
-    cli.SetMail (texto);
-
-    cli.SetAcumulado (vta.GetValorVenta());
-
-    cli.SetDni (vta.GetDni ());
-
-    cli.SetId (vta.GetIdCliente());
-
-    cli.SetEstado (vta.GetEstado ());
-    GuardarClienteNuevo (cli);
 }
 
 bool GuardarClienteNuevo (clientes reg){///YA ESTA
@@ -168,7 +146,7 @@ int BuscarCliente (int id){ /// YA ESTA
     return pos = - 2 ; /// DEVUELVE -2 SI NO LO ENCUENTRA
 }
 
-int BuscarDni (int dni){
+int BuscarDni (int dni){ /// Recibe dni y devuelve posicion
     int pos=0, cant, x;
     clientes *reg;
     cant = CantClientes ();
@@ -269,15 +247,20 @@ int ListarClientes (){
 
     fread (vec,sizeof (clientes), cant, f) ;
     fclose (f);
+
     cls ();
     devolucion ("LISTADO DE CLIENTES", "AMARILLO", ancho_formato, alto_formato) ;
     titulo ("LISTADO DE CLIENTES", "AMARILLO", ancho_formato) ;
     guiones (ancho_formato,19);
     gotoxy (1,x+7);
+    msj (" ",2,ancho_formato,"AZUL");
+    setBackgroundColor (BLUE);
+    gotoxy (1,x+7);
     cout << " ID  |   Nombre   |     Apellido       |    DNI   |  Acumulado" << endl ;
+    setBackgroundColor (BLACK);
     guiones(ancho_formato);
 
-    for (x=0 ; x< cant ;x++){
+    for (x=0 ; x<cant ;x++){
         if (cont>9){
             cont = 0 ;
             anykey ();
@@ -285,7 +268,7 @@ int ListarClientes (){
             devolucion ("LISTADO DE CLIENTES", "AMARILLO", ancho_formato, alto_formato) ;
             guiones (ancho_formato,19);
         }
-        if (vec[x].GetEstado()==true) {
+        //if (vec[x].GetEstado()==true) {
             gotoxy (1, cont+9);
             cout << vec[x].GetId ();
             gotoxy (6, cont+9);
@@ -300,7 +283,7 @@ int ListarClientes (){
             cout << "| $" << vec[x].GetAcumulado ();
             cout << endl ;
             cont ++ ;
-        }
+        //}
     }
     anykey ();
     free (vec);

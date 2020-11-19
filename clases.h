@@ -1,6 +1,10 @@
 #ifndef CLASES_H_INCLUDED
 #define CLASES_H_INCLUDED
 
+
+
+
+
 struct fecha {
     int dia, mes, anio;
 };
@@ -10,64 +14,69 @@ private:
     fecha fec_compra ;
     int num_venta ;
     int id_cliente ;
+    //
     int cod_art ;
     int cant_venta ;
-    char nombre [50] ;
-    char apellido [50] ;
-    int dni ;
-    char mail [50];
+    //
     float valor_venta ;
     bool estado ;
 
 public:
-    bool SetNuevaVenta ();
     void CancelarVenta ();
 
     int GetCodArt ();
+    void SetCodArt (int);
+
     int GetNumVenta ();
+    void SetNumVenta (int);
+
     int GetIdCliente ();
-    void MostrarNombre();
-    void GetNombre (char *);
-    void SetApellido (char*);
-    void GetApellido (char*);
-    void MostrarApellido ();
-    int GetDni ();
-    void GetMail (char*);
-    void MostrarMail ();
+    void SetIdCliente (int);
+
     float GetValorVenta ();
+    void SetValorVenta (float);
+
     bool GetEstado ();
+    void SetEstado (bool);
+
+    int GetCantVenta ();
+    void SetCantVenta (int);
+
     void MostrarFechaVenta ();
-    int GetCant ();
+    void SetFecCompra (fecha);
 };
 
-struct stock {
-    float andador_comun ;
-    bool an_co;
-    float andador_ruedas ;
-    bool an_ru ;
-    float andador_asiento ;
-    bool an_as ;
+class detalle {
+private:
+    int num_venta ;
+    int num_detalle ;
+    int cod_art ;
+    int cant_venta ;
+    float valor_detalle ;
+    bool estado ;
+public:
+    detalle ();
+    detalle (int);
+    ~detalle ();
 
-    float cama_manual_eco;
-    bool ca_eco;
-    float cama_manual;
-    bool ca_ma;
-    float cama_electrica ;
-    bool ca_el;
 
-    float baston_1;
-    bool ba_1;
-    float baston_3;
-    bool ba_3;
-    float baston_4;
-    bool ba_4;
+    int GetNumVenta ();
+    void SetNumVenta (int);
 
-    float silla_t;
-    bool si_t;
-    float silla_a;
-    bool si_a;
-    float silla_r;
-    bool si_r;
+    int GetNumDetalle ();
+    void SetNumDetalle (int);
+
+    int GetCodArt ();
+    void SetCodArt (int);
+
+    int GetCantVenta ();
+    void SetCantVenta (int);
+
+    float GetValorDetalle ();
+    void SetValorDetalle (float);
+
+    bool GetEstado ();
+    void SetEstado (bool);
 };
 
 class clientes{
@@ -100,23 +109,42 @@ public:
 
 };
 
-struct precios {
-    float andador_comun ;
-    float andador_ruedas ;
-    float andador_asiento ;
+class articulo {
+private:
+    /// int tipo_art ;
+    char nombre [25];
+    int cod ;
+    int stock ;
+    float precio ;
+    bool estado ;
+public:
 
-    float cama_manual_eco;
-    float cama_manual ;
-    float cama_electrica ;
+    articulo ();
+    ~articulo ();
 
-    float baston_1;
-    float baston_3;
-    float baston_4;
+    void GetNombre (char*);
+    void SetNombre (char*);
 
-    float silla_t;
-    float silla_a;
-    float silla_r;
+    int GetCodArt ();
+    void SetCodArt (int);
+
+    int GetStock ();
+    void SetStock (int);
+
+    float GetPrecio ();
+    void SetPrecio (float);
+
+    bool GetEstado ();
+    void SetEstado (bool);
+
+
+
+
+
+
 };
+
+
 
 
 #endif // CLASES_H_INCLUDED

@@ -3,6 +3,7 @@
 #define alto_formato 25
 #define ancho_formato 80
 
+
 void initUI();
 
 void func_hora ();
@@ -28,6 +29,10 @@ void msj (const char *, int , int, const char*);
 void linea_horizontal (int, int, int);
 
 void ColorRenglon (int, int, char *);
+
+void dibujarDado (int, int) ;
+void recuadro (int, int, int,int) ;
+
 
 
 

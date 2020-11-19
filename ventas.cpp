@@ -9,9 +9,8 @@ using namespace rlutil ;
 #include "ventas.h"
 #include "clientes.h"
 #include "stock.h"
+#include "articulo.h"
 ///INTERFAZ MAGENTA
-const char *ArchivoVentas = "archivoventas.dat" ;
-
 
 
 bool GuardarVenta (ventas vta){
@@ -87,22 +86,30 @@ ventas LeerVenta (int pos) {
     return reg ;
 }
 
-void MostrarVenta (ventas reg){
+void MostrarVenta (ventas reg){/// esta
+    clientes cli ;
+    int pos ;
+    char texto [50];
+    pos=BuscarCliente (reg.GetIdCliente());
+    cli = LeerCliente (pos);
+
     cls ();
     devolucion ("VENTA", "MAGENTA", ancho_formato, alto_formato);
     guiones (ancho_formato,13);
     titulo ("VENTA", "MAGENTA", ancho_formato);
-    gotoxy ((ancho_formato-65656)/2,3);
+    gotoxy ((ancho_formato-6)/2,3);
     reg.MostrarFechaVenta () ;cout << endl ;
     msj ("Num. venta: ", 2, ancho_formato) ; cout << reg.GetNumVenta () << endl ;
     msj ("ID cliente: ", 2, ancho_formato) ; cout << reg.GetIdCliente () << endl ;
-    msj ("Nombre: ", 2, ancho_formato-10) ; reg.MostrarNombre (); cout << endl ;
-    msj ("Apellido: ", 2, ancho_formato-10) ; reg.MostrarApellido () ; cout << endl ;
-    msj ("DNI: ", 2, ancho_formato-5) ; cout << reg.GetDni () << endl ;
-    msj ("Mail: ", 2, ancho_formato-15) ; reg.MostrarMail () ; cout << endl ;
+    cli.GetNombre (texto);
+    msj ("Nombre: ", 2, ancho_formato-10) ; cout << texto << endl ;
+    cli.GetApellido (texto);
+    msj ("Apellido: ", 2, ancho_formato-10) ; cout << texto << endl ;
+    msj ("DNI: ", 2, ancho_formato-5) ; cout << cli.GetDni () << endl ;
+    cli.GetMail (texto);
+    msj ("Mail: ", 2, ancho_formato-15) ;  cout << texto << endl ;
     msj ("Cod. artículo: ", 2, ancho_formato) ; cout << reg.GetCodArt () << endl ;
-    msj ("Cantidad: ", 2, ancho_formato) ; cout << reg.GetCant () << endl ;
-
+    msj ("Cantidad: ", 2, ancho_formato) ; cout << reg.GetCantVenta () << endl ;
     msj ("Monto: $", 2, ancho_formato-5) ; cout << reg.GetValorVenta () << endl ;
     gotoxy (ancho_formato-3,alto_formato-2);
     if (reg.GetEstado()==true){
@@ -118,28 +125,28 @@ void MostrarVenta (ventas reg){
     showcursor ();
 }
 
-int ListarVentas (){ /// falta hacer
-    int cant = CantVentas (),x=0, cont=0;
-    ventas *vec  ;
+int ListarVentas (){ /// esta
+    clientes cli ;
+    char texto [50];
+    int cant = CantVentas (),x=0, cont=0, pos;
+    ventas *vta  ;
     if (cant==-1){
         return -1; /// ERROR DE LECTURA CANTIDAD
     }
-    vec = (ventas*) malloc (cant*sizeof (ventas));
-    if (vec ==NULL){
-        free (vec);
+    vta = (ventas*) malloc (cant*sizeof (ventas));
+    if (vta ==NULL){
+        free (vta);
         return -2 ; /// ERROR DE MEMORIA INTERNA
     }
-
-
     FILE*f ;
     f =fopen (ArchivoVentas, "rb");
     if (f==NULL){
-        free (vec);
+        free (vta);
         return -1 ; /// ERROR DE LECTURA
     }
-
-    fread (vec,sizeof (ventas), cant, f) ;
+    fread (vta,sizeof (ventas), cant, f) ;
     fclose (f);
+
     cls ();
     devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
     titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
@@ -149,6 +156,8 @@ int ListarVentas (){ /// falta hacer
     cout << "    Fecha    | Vta |  Apellido          | Art | Cant | Valor vta.| ID " << endl ;
     guiones(ancho_formato);
     for (x=0 ; x< cant ;x++){
+        pos = BuscarCliente (vta[x].GetIdCliente());
+        cli = LeerCliente (pos);
         if (cont>9){
             cont = 0 ;
             anykey ();
@@ -156,33 +165,37 @@ int ListarVentas (){ /// falta hacer
             devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
             guiones (ancho_formato,19);
         }
-        if (vec[x].GetEstado()==true) {
+        if (vta[x].GetEstado()==true) {
             gotoxy (1, cont+9);
-            cout << "  " ; vec[x].MostrarFechaVenta ();
+            cout << "  " ; vta[x].MostrarFechaVenta ();
             gotoxy (14,cont+9);
             cout << "| " ;
-            cout << vec[x].GetNumVenta() ;
+            cout << vta[x].GetNumVenta() ;
             gotoxy (20,cont+9);
-            cout << "| " ; vec[x].MostrarApellido() ;
+            cli.GetApellido (texto);
+            cout << "| " << texto ;
             gotoxy (41,cont+9);
-            cout << "| " << vec[x].GetCodArt() ;
+            cout << "| " << vta[x].GetCodArt() ;
             gotoxy (47,cont+9) ;
-            cout << "| " << vec[x].GetCant () ;
+            cout << "| " << vta[x].GetCantVenta () ;
             gotoxy (54,cont+9) ;
-            cout << "|  $" << vec[x].GetValorVenta() ;
+            cout << "|  $" << vta[x].GetValorVenta() ;
             gotoxy (66,cont+9);
-            cout << "| " << vec[x].GetIdCliente ();
+            cout << "| " << vta[x].GetIdCliente ();
             cout << endl ;
 
             cont ++ ;
         }
     }
     anykey ();
-    free (vec);
+    free (vta);
     return 0 ; /// Todo ok
 }
 
-int ListarClientesPorId (int id){
+int ListarClientesPorId (int id){ ///esta
+    clientes cli ;
+    int pos ;
+    char texto [50];
     int cant = CantVentas (),x=0, cont=0;
     ventas *vec  ;
     if (cant==-1){
@@ -204,13 +217,23 @@ int ListarClientesPorId (int id){
     fread (vec,sizeof (ventas), cant, f) ;
     fclose (f);
 
+    pos = BuscarCliente (id);
+    if (pos<0){
+        return 0 ;
+    }
+    cli = LeerCliente (pos);
+    itoa (id,texto,10);
+
     cls ();
-    devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
-    titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-    guiones (ancho_formato,19);
-    gotoxy (1,x+6);
-    guiones (ancho_formato);
+    devolucion (texto, "MAGENTA", ancho_formato, alto_formato) ;
+    titulo (texto, "MAGENTA", ancho_formato) ;
+    //guiones (ancho_formato,19);
+    gotoxy (1,x+7);
+    msj (" ",2,ancho_formato,"AZUL");
+    setBackgroundColor (BLUE);
+    gotoxy (1,x+7);
     cout << "    Fecha    | Vta |  Apellido          | Art | Cant | Valor vta.| ID " << endl ;
+    setBackgroundColor (BLACK);
     guiones(ancho_formato);
     for (x=0 ; x< cant ;x++){
         if (cont>9){
@@ -227,11 +250,12 @@ int ListarClientesPorId (int id){
             cout << "| " ;
             cout << vec[x].GetNumVenta() ;
             gotoxy (20,cont+9);
-            cout << "| " ; vec[x].MostrarApellido() ;
+            cli.GetApellido (texto);
+            cout << "| " << texto ;
             gotoxy (41,cont+9);
             cout << "| " << vec[x].GetCodArt() ;
             gotoxy (47,cont+9) ;
-            cout << "| " << vec[x].GetCant () ;
+            cout << "| " << vec[x].GetCantVenta () ;
             gotoxy (54,cont+9) ;
             cout << "|  $" << vec[x].GetValorVenta() ;
             gotoxy (66,cont+9);
@@ -241,6 +265,7 @@ int ListarClientesPorId (int id){
             cont ++ ;
         }
     }
+    guiones (ancho_formato);
     anykey ();
     free (vec);
     if (cont == 0){
@@ -249,35 +274,45 @@ int ListarClientesPorId (int id){
     return 1 ; /// Encontro alguna venta
 }
 
-int ListarClientesPorDni (int dni){
-    int cant = CantVentas (),x=0, cont=0;
-    ventas *vec  ;
+int ListarClientesPorDni (int dni){ /// esta
+    int cant = CantVentas (),x=0, cont=0, pos_cli;
+    ventas *vta  ;
+    clientes cli ;
+
+    char texto [50];
     if (cant==-1){
         return -1; /// ERROR DE LECTURA CANTIDAD
     }
-    vec = (ventas*) malloc (cant*sizeof (ventas));
-    if (vec ==NULL){
-        free (vec);
+    vta = (ventas*) malloc (cant*sizeof (ventas));
+    if (vta ==NULL){
+        free (vta);
         return -2 ; /// ERROR DE MEMORIA INTERNA
     }
-
-
     FILE*f ;
     f =fopen (ArchivoVentas, "rb");
     if (f==NULL){
-        free (vec);
+        free (vta);
         return -1 ; /// ERROR DE LECTURA
     }
-    fread (vec,sizeof (ventas), cant, f) ;
+    fread (vta,sizeof (ventas), cant, f) ;
     fclose (f);
 
+    pos_cli=BuscarDni (dni);
+    if (pos_cli<0){
+        return -0 ;
+    }
+    cli = LeerCliente (pos_cli);
+    itoa (dni,texto,10);
+
     cls ();
-    devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
-    titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-    guiones (ancho_formato,19);
-    gotoxy (1,x+6);
-    guiones (ancho_formato);
+    devolucion (texto, "MAGENTA", ancho_formato, alto_formato) ;
+    titulo (texto, "MAGENTA", ancho_formato) ;
+    gotoxy (1,x+7);
+    msj (" ",2,ancho_formato,"AZUL");
+    setBackgroundColor (BLUE);
+    gotoxy (1,x+7);
     cout << "    Fecha    | Vta |  Apellido          | Art | Cant | Valor vta.| ID " << endl ;
+    setBackgroundColor (BLACK);
     guiones(ancho_formato);
     for (x=0 ; x< cant ;x++){
         if (cont>9){
@@ -287,65 +322,76 @@ int ListarClientesPorDni (int dni){
             devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
             guiones (ancho_formato,19);
         }
-        if (vec[x].GetEstado()==true && vec[x].GetDni()==dni) {
+        if (vta[x].GetEstado()==true && vta[x].GetIdCliente()==cli.GetId ()) {
             gotoxy (1, cont+9);
-            cout << "  " ; vec[x].MostrarFechaVenta ();
+            cout << "  " ; vta[x].MostrarFechaVenta ();
             gotoxy (14,cont+9);
             cout << "| " ;
-            cout << vec[x].GetNumVenta() ;
+            cout << vta[x].GetNumVenta() ;
             gotoxy (20,cont+9);
-            cout << "| " ; vec[x].MostrarApellido() ;
+            cli.GetApellido (texto);
+            cout << "| " << texto ;
             gotoxy (41,cont+9);
-            cout << "| " << vec[x].GetCodArt() ;
+            cout << "| " << vta[x].GetCodArt() ;
             gotoxy (47,cont+9) ;
-            cout << "| " << vec[x].GetCant () ;
+            cout << "| " << vta[x].GetCantVenta () ;
             gotoxy (54,cont+9) ;
-            cout << "|  $" << vec[x].GetValorVenta() ;
+            cout << "|  $" << vta[x].GetValorVenta() ;
             gotoxy (66,cont+9);
-            cout << "| " << vec[x].GetIdCliente ();
+            cout << "| " << vta[x].GetIdCliente ();
             cout << endl ;
 
             cont ++ ;
         }
     }
+    guiones (ancho_formato);
     anykey ();
-    free (vec);
+    free (vta);
     if (cont == 0){
         return 0 ; /// No encontro ventas
     }
     return 1 ; /// Encontro alguna venta
 }
 
-int ListarClientesPorMail (char *mail){
-    int cant = CantVentas (),x=0, cont=0, comp;
-    ventas *vec  ;
+int ListarClientesPorMail (char *mail){ /// esta
+    clientes cli ;
+    int cant = CantVentas (),x=0, cont=0, comp, pos_cli;
+    ventas *vta  ;
     char texto[50] ;
     if (cant==-1){
         return -1; /// ERROR DE LECTURA CANTIDAD
     }
-    vec = (ventas*) malloc (cant*sizeof (ventas));
-    if (vec ==NULL){
-        free (vec);
+    vta = (ventas*) malloc (cant*sizeof (ventas));
+    if (vta ==NULL){
+        free (vta);
         return -2 ; /// ERROR DE MEMORIA INTERNA
     }
-
-
     FILE*f ;
     f =fopen (ArchivoVentas, "rb");
     if (f==NULL){
-        free (vec);
+        free (vta);
         return -1 ; /// ERROR DE LECTURA
     }
-    fread (vec,sizeof (ventas), cant, f) ;
+    fread (vta,sizeof (ventas), cant, f) ;
     fclose (f);
+
+    pos_cli = BuscarMail (mail);
+    if (pos_cli<0){
+        return 0;
+    }
+    cli = LeerCliente (pos_cli);
+    cli.GetMail (texto);
 
     cls ();
     devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
-    titulo ("LISTADO DE VENTAS", "MAGENTA", ancho_formato) ;
-    guiones (ancho_formato,19);
-    gotoxy (1,x+6);
-    guiones (ancho_formato);
+    titulo (texto, "MAGENTA", ancho_formato) ;
+
+    gotoxy (1,x+7);
+    msj (" ",2,ancho_formato,"AZUL");
+    setBackgroundColor (BLUE);
+    gotoxy (1,x+7);
     cout << "    Fecha    | Vta |  Apellido          | Art | Cant | Valor vta.| ID " << endl ;
+    setBackgroundColor (BLACK);
     guiones(ancho_formato);
     for (x=0 ; x< cant ;x++){
         if (cont>9){
@@ -355,55 +401,55 @@ int ListarClientesPorMail (char *mail){
             devolucion ("LISTADO DE VENTAS", "MAGENTA", ancho_formato, alto_formato) ;
             guiones (ancho_formato,19);
         }
-        vec[x].GetMail (texto);
-        comp = strcmp(mail, texto);
-        if (vec[x].GetEstado()==true && comp==0) {
+        if (vta[x].GetEstado()==true && vta[x].GetIdCliente() == cli.GetId()/*comp==0*/) {
             gotoxy (1, cont+9);
-            cout << "  " ; vec[x].MostrarFechaVenta ();
+            cout << "  " ; vta[x].MostrarFechaVenta ();
             gotoxy (14,cont+9);
             cout << "| " ;
-            cout << vec[x].GetNumVenta() ;
+            cout << vta[x].GetNumVenta() ;
             gotoxy (20,cont+9);
-            cout << "| " ; vec[x].MostrarApellido() ;
+            cli.GetApellido (texto);
+            cout << "| " << texto ;
             gotoxy (41,cont+9);
-            cout << "| " << vec[x].GetCodArt() ;
+            cout << "| " << vta[x].GetCodArt() ;
             gotoxy (47,cont+9) ;
-            cout << "| " << vec[x].GetCant () ;
+            cout << "| " << vta[x].GetCantVenta () ;
             gotoxy (54,cont+9) ;
-            cout << "|  $" << vec[x].GetValorVenta() ;
+            cout << "|  $" << vta[x].GetValorVenta() ;
             gotoxy (66,cont+9);
-            cout << "| " << vec[x].GetIdCliente ();
+            cout << "| " << vta[x].GetIdCliente ();
             cout << endl ;
-
             cont ++ ;
         }
     }
+    guiones (ancho_formato);
     anykey ();
-    free (vec);
+    free (vta);
     if (cont == 0){
         return 0 ; /// No encontro ventas
     }
     return 1 ; /// Encontro alguna venta
 }
 
-
-///---------------------------------------------------------------------------------------------------------------------///
-
-bool ventas::SetNuevaVenta (){
-    /// VALIDACIONES VENTA--------------------
-
-    int x , pos, cant_stock;
+bool NuevaVenta (){
+    char texto [50], opc;
+    ventas vta ;
+    clientes cli ;
+    articulo art ;
+    fecha dia ;
+    int x , pos, cant_stock, pos_art, pos_cli;
+    float valor ;
+    bool cli_nuevo = true, grabo , grabo1;
     cls ();
     devolucion ("NUEVA VENTA","MAGENTA",ancho_formato,alto_formato);
     guiones (ancho_formato,13);
     titulo ("NUEVA VENTA","MAGENTA",ancho_formato);
 
     MostrarFecha (2,ancho_formato); cout << endl ;
-    fec_compra = CargarFechaActual ();
-
-    msj ("Num. venta: ", 2, ancho_formato) ; cout << CantVentas ()+1 << endl ;
-    num_venta = CantVentas ()+1 ;
-
+    dia = CargarFechaActual ();
+    vta.SetFecCompra (dia);
+    vta.SetNumVenta (CantVentas()+1);
+    msj ("Num. venta: ", 2, ancho_formato) ; cout << vta.GetNumVenta () << endl ;
     msj ("ID cliente: ", 2, ancho_formato) ;
     cin >> x ;
     while (x<=0){ ///Validacion ID cliente
@@ -416,37 +462,29 @@ bool ventas::SetNuevaVenta (){
         msj ("ID cliente: ", 2, ancho_formato) ;
         cin >> x ;
     }
-
-
-    /// FUNCION BUSCAR CLIENTE Y HACER IF PARA QUE SE COMPLETE SOLO LOS DATOS.
-    id_cliente = x ;
-
-    pos=BuscarCliente (x);
-    if (pos>=0){
-        char texto [50];
-        clientes cli;
-        cli=LeerCliente (pos);
+    vta.SetIdCliente (x);
+    cli.SetId (x);
+    pos_cli=BuscarCliente (x);
+    if (pos_cli>=0){
+        cli=LeerCliente (pos_cli);
 
         cli.GetNombre (texto);
-        strcpy (nombre,texto);
         msj ("Nombre: ",2,ancho_formato-10); cout << texto << endl ;
 
         cli.GetApellido (texto);
-        strcpy (apellido,texto);
         msj ("Apellido: ",2,ancho_formato-10); cout << texto << endl ;
 
         msj ("DNI: ", 2, ancho_formato-5); cout << cli.GetDni () << endl ;
-        dni=cli.GetDni ();
 
         cli.GetMail (texto);
-        strcpy (mail,texto);
         msj ("Mail: ",2,ancho_formato-15); cout << texto << endl ;
+        cli_nuevo = false ;
     }else {
-        if (pos==-2){
+        if (pos_cli==-2){
             msj ("Nombre: ", 2, ancho_formato-10) ;
             cin.ignore ();
-            cin.getline(nombre,50);
-            x=ValidarTexto (nombre);
+            cin.getline(texto,50);
+            x=ValidarTexto (texto);
             while (x==0){
                 devolucion ("NOMBRE INCORRECTO ","ROJO",ancho_formato,alto_formato);
                 titulo ("NOMBRE INCORRECTO","ROJO",ancho_formato);
@@ -455,13 +493,14 @@ bool ventas::SetNuevaVenta (){
                 titulo ("NUEVA VENTA","MAGENTA",ancho_formato);
                 borrar_renglon (6);
                 msj ("Nombre: ", 2, ancho_formato-10) ;
-                cin.getline(nombre,50);
-                x=ValidarTexto (nombre);
+                cin.getline(texto,50);
+                x=ValidarTexto (texto);
             }
+            cli.SetNombre (texto);
 
             msj ("Apellido: ", 2, ancho_formato-10) ;
-            cin.getline (apellido, 50);
-            x=ValidarTexto (apellido);
+            cin.getline (texto, 50);
+            x=ValidarTexto (texto);
             while (x==0){
                 devolucion ("APELLIDO INCORRECTO ","ROJO",ancho_formato,alto_formato);
                 titulo ("APELLIDO INCORRECTO","ROJO",ancho_formato);
@@ -470,9 +509,11 @@ bool ventas::SetNuevaVenta (){
                 titulo ("NUEVA VENTA","MAGENTA",ancho_formato);
                 borrar_renglon (7);
                 msj ("Apellido: ", 2, ancho_formato-10) ;
-                cin.getline(apellido,50);
-                x=ValidarTexto (apellido);
+                cin.getline(texto,50);
+                x=ValidarTexto (texto);
             }
+            cli.SetApellido (texto);
+
 
             msj ("DNI: ", 2, ancho_formato-5) ;
             cin >> x ;
@@ -494,13 +535,13 @@ bool ventas::SetNuevaVenta (){
                 cin >> x ;
                 pos=BuscarDni (x);
             }
-            dni = x ;
+            cli.SetDni(x);
 
             msj ("Mail: ", 2, ancho_formato-15) ;
             cin.ignore ();
-            cin.getline (mail, 50);
-            x=ValidarMail (mail);
-            pos = BuscarMail (mail);
+            cin.getline (texto, 50);
+            x=ValidarMail (texto);
+            pos = BuscarMail (texto);
             while (x==0 || pos>=0){
                 if (pos>=0){
                     devolucion ("YA HAY UN CLIENTE CON ESE MAIL","ROJO",ancho_formato,alto_formato);
@@ -515,9 +556,10 @@ bool ventas::SetNuevaVenta (){
                 titulo ("NUEVA VENTA","MAGENTA",ancho_formato);
                 borrar_renglon (9);
                 msj ("Mail: ", 2, ancho_formato-15) ;
-                cin.getline(mail,50);
-                x=ValidarMail (mail);
+                cin.getline(texto,50);
+                x=ValidarMail (texto);
             }
+            cli.SetMail(texto);
         }
         else {
             cls ();
@@ -528,7 +570,8 @@ bool ventas::SetNuevaVenta (){
 
     msj ("Cod. artículo: ", 2, ancho_formato) ;
     cin >> x ;
-    while (x!=100 && x!=110 && x!=120 && x!=200 && x!=210 && x!=220 && x!=300 && x!=310 && x!=320 && x!=400 &&x!=410 && x!=420){
+    pos_art = BuscarArticulo (x);
+    while (pos_art<0){
         devolucion ("CÓDIGO INCORRECTO","ROJO",ancho_formato,alto_formato);
         titulo ("CÓDIGO INCORRECTO","ROJO",ancho_formato);
         anykey ();
@@ -537,12 +580,14 @@ bool ventas::SetNuevaVenta (){
         borrar_renglon (10);
         msj ("Cod. artículo: ", 2, ancho_formato) ;
         cin >> x ;
+        pos_art = BuscarArticulo (x);
     }
-    cod_art = x ;
-
+    vta.SetCodArt (x);
+    pos_art = BuscarArticulo (x);
+    art=LeerArticulo (pos_art);
+    cant_stock = BuscarStock (pos);
     msj ("Cantidad: ", 2, ancho_formato) ;
     cin >> x ;
-    cant_stock = BuscarStock (cod_art);
     while (x<=0 || cant_stock<x){
         if (x<=0){
         devolucion ("DEBE COMPRAR AL MENOS 1","ROJO",ancho_formato,alto_formato);
@@ -554,13 +599,12 @@ bool ventas::SetNuevaVenta (){
         msj ("Cantidad: ", 2, ancho_formato) ;
         cin >> x ;
         }
-
         else{
             char opcion ;
             devolucion ("NO HAY STOCK SUFICIENTE","ROJO",ancho_formato,alto_formato);
             titulo ("NO HAY STOCK SUFICIENTE","ROJO",ancho_formato);
             gotoxy (1,alto_formato-10);
-            MostrarStockArticulo (cod_art);
+            MostrarStockArticulo (pos);
             cout << endl ;
             msj ("¿Desea cancelar la venta? ",2,ancho_formato,"ROJO"); cout << endl;
             msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
@@ -596,77 +640,131 @@ bool ventas::SetNuevaVenta (){
             }
         }
     }
-
-    cant_venta = x ;
+    vta.SetCantVenta (x);
+    art.SetStock (x * -1);
     msj ("Monto: $", 2, ancho_formato-5) ;
-    valor_venta = ValorVenta (cod_art,cant_venta) ;
-    cout << valor_venta ;
-
-    estado = true ;
+    valor = ValorVenta (vta.GetCodArt (), vta.GetCantVenta ()) ;
+    cout << valor ;
+    vta.SetValorVenta (valor);
+    cli.SetAcumulado (valor);
+    vta.SetEstado (true);
     hidecursor ();
     anykey ();
     showcursor ();
-    return true ;
+
+
+    gotoxy (1,16);
+
+    msj ("Confirme la venta (S/N): ",2,ancho_formato);
+    cin >> opc ;
+
+    while (opc!='s' && opc!='S' && opc!='n' && opc!='N'){
+        devolucion ("CARÁCTER INVÁLIDO","ROJO", ancho_formato, alto_formato);
+        titulo ("CARÁCTER INVÁLIDO","ROJO", ancho_formato);
+        anykey ();
+        devolucion ("VENTAS","MAGENTA", ancho_formato, alto_formato);
+        titulo ("VENTAS","MAGENTA", ancho_formato);
+        borrar_renglon (alto_formato/2);
+        gotoxy (1,alto_formato /2);
+        msj ("Confirme la venta (S/N): ",2,ancho_formato);
+        cin >> opc ;
+    }
+
+    if (opc =='s' || opc=='S'){
+        grabo = GuardarVenta(vta);
+        if (grabo ==true){
+            cls ();
+            devolucion ("VENTA REALIZADA","MAGENTA", ancho_formato, alto_formato);
+            titulo ("VENTA REALIZADA","MAGENTA", ancho_formato);
+            gotoxy (1,alto_formato/2);
+            msj ("VENTA CONFIRMADA",2, ancho_formato,"VERDE");
+            anykey ();
+            cli.SetEstado(true);
+            if (cli_nuevo == true){
+                grabo1=GuardarClienteNuevo (cli);
+            }else {
+                grabo1=GuardarCliente (cli, pos_cli);
+            }
+            if (grabo1 == false){
+                devolucion ("OCURRIÓ UN ERROR AL GUARDAR EL CLIENTE","MAGENTA", ancho_formato, alto_formato);
+                titulo ("OCURRIÓ UN ERROR AL GUARDAR EL CLIENTE","MAGENTA", ancho_formato);
+                anykey ();
+            }
+            grabo = GuardarArticulo (art,pos_art);
+        }
+        else {
+            devolucion ("ERROR AL GRABAR","ROJO", ancho_formato, alto_formato);
+            titulo ("ERROR AL GRABAR","ROJO", ancho_formato);
+            anykey ();
+        }
+    }
+    else{
+        devolucion ("VENTA CANCELADA","MAGENTA", ancho_formato, alto_formato);
+        titulo ("VENTA CANCELADA","MAGENTA", ancho_formato);
+        gotoxy (1, alto_formato/2);
+        msj ("VENTA CANCELADA",2, ancho_formato,"ROJO");
+        anykey ();
+    }
 }
+
+///------------------------------------------------------------------------------------//
 
 void ventas::CancelarVenta (){
     estado = false ;
+}
+
+void ventas::SetFecCompra (fecha dia){
+    fec_compra.dia = dia.dia ;
+    fec_compra.mes = dia.mes ;
+    fec_compra.anio = dia.anio ;
+}
+
+void ventas::SetNumVenta (int num){
+    num_venta = num ;
 }
 
 int ventas::GetNumVenta (){
     return num_venta ;
 }
 
+void ventas::SetIdCliente (int id){
+    id_cliente = id ;
+}
+
 int ventas::GetIdCliente (){
     return id_cliente;
-}
-
-void ventas::GetNombre (char *texto){
-    strcpy (texto, nombre);
-}
-
-void ventas::MostrarNombre (){
-    cout << nombre ;
-}
-
-void ventas::SetApellido (char* texto){
-    strcpy (apellido, texto);
-}
-
-void ventas::GetApellido (char* texto){
-    strcpy (texto, apellido);
-}
-
-void ventas::MostrarApellido (){
-    cout << apellido ;
-}
-
-int ventas::GetDni (){
-    return dni;
-}
-
-void ventas::GetMail (char* texto){
-    strcpy (texto, mail);
-}
-
-void ventas::MostrarMail (){
-    cout << mail ;
 }
 
 float ventas::GetValorVenta (){
     return valor_venta ;
 }
 
+void ventas::SetValorVenta (float valor){
+    valor_venta = valor ;
+}
+
 bool ventas::GetEstado (){
     return estado ;
 }
 
-int ventas::GetCant (){
+void ventas::SetEstado (bool es){
+    estado = es ;
+}
+
+int ventas::GetCantVenta (){
     return cant_venta ;
+}
+
+void ventas::SetCantVenta (int cant){
+    cant_venta = cant ;
 }
 
 int ventas::GetCodArt (){
     return cod_art ;
+}
+
+void ventas::SetCodArt (int cod){
+    cod_art = cod ;
 }
 
 void ventas::MostrarFechaVenta () {

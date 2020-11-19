@@ -9,6 +9,7 @@ using namespace rlutil;
 #include "interfaz.h"
 ///const int ancho_formato = 80, alto_formato=25 ;
 
+
 void initUI() {
     system("mode con: cols=80 lines=25");
     SetConsoleOutputCP(1252);
@@ -335,7 +336,7 @@ void msj (const char *m, int ubicacion , int ancho, const char* color){
 
 void linea_horizontal (int x,int yinicial,int yfinal){
     int i ;
-    const char lin_ver = 380;
+    const char lin_ver = 179;
     for (i=yinicial; i<=yfinal ; i++){
         gotoxy (x,i);
         cout << lin_ver ;
@@ -383,5 +384,150 @@ void ColorRenglon (int ancho,int renglon, char *color){
         }
     }
     gotoxy (1,renglon);
+}
+
+void recuadro(int x, int y, int ancho, int alto){
+    /// códigos windows, usando (char)
+    const char esq_1=218 ;/// - ┌
+    const char esq_2=191 ;/// - ┐
+    const char esq_3=217 ;/// - ┘
+    const char esq_4=192 ;/// - └
+    //const char cruz=197 ;/// - ┼
+    const char l_hor=196 ;/// - ─
+    const char l_ver=179 ;/// - │
+    //const char t_inv=193 ;/// - ┴
+    //const char t_nor=194 ;/// - ┬"
+    //const char t_lad1=195 ;/// 195 - ├
+    //const char t_lad2=180 ;/// 180 - ┤
+    /// Borramos el espacio del recuadro
+    int i, j;
+    for(i=x; i<=x+ancho; i++){
+        for(j=y; j<=y+alto; j++){
+            locate(i, j);
+            cout << " ";
+
+        }
+    }
+    /// Líneas horizontales
+    for(i=x; i<=x+ancho; i++){
+        locate(i, y);
+        cout << l_hor ;
+
+        locate(i, y+alto);
+        cout << l_hor ;
+    }
+    /// Líneas verticales
+    for(i=y; i<=y+alto; i++){
+        locate(x, i);
+        cout << l_ver ;
+        locate(x+ancho, i);
+        cout << l_ver ;
+    }
+    /// Vértices
+    locate(x, y);
+    cout << esq_1;
+    locate(x, y+alto);
+    cout << esq_4 ;
+    locate(x+ancho, y);
+    cout << esq_2 ;
+    locate(x+ancho, y+alto);
+    cout << esq_3;
+}
+
+void dibujarDado0(int x,int y, int ANCHO, int ALTO,int INI, int nroDado, int valor){
+    const int Y = 5 ;
+    //const int ALTO = 4;
+    //const int INI = 15;
+    const int X = INI + (nroDado * 10);
+    //const int ANCHO = 8;
+
+    /// Ubicaciones del punto
+    const int CENTRO_X = X + ANCHO/2;
+    const int CENTRO_Y = Y + ALTO/2;
+    const int IZQUIERDA = CENTRO_X - 2;
+    const int ARRIBA = CENTRO_Y - 1;
+    const int DERECHA= CENTRO_X + 2;
+    const int ABAJO= CENTRO_Y + 1;
+    recuadro(X, Y, ANCHO, ALTO);
+    /// Dibujar los puntos
+    const char DOT = 254;
+    switch(valor){
+        case 1:{
+            locate(CENTRO_X, CENTRO_Y);
+            cout << DOT;
+        }
+        break;
+        case 2:{
+            if (nroDado%2 == 0){
+                locate(IZQUIERDA, ARRIBA);
+                cout << DOT;
+                locate(DERECHA, ABAJO);
+                cout << DOT;
+            }
+            else{
+                locate(DERECHA, ARRIBA);
+                cout << DOT;
+                locate(IZQUIERDA, ABAJO);
+                cout << DOT;
+            }
+        }
+        break;
+        case 3:{
+            if (nroDado%2 == 0){
+                locate(IZQUIERDA, ARRIBA);
+                cout << DOT;
+                locate(DERECHA, ABAJO);
+                cout << DOT;
+            }
+            else{
+                locate(DERECHA, ARRIBA);
+                cout << DOT;
+                locate(IZQUIERDA, ABAJO);
+                cout << DOT;
+            }
+            locate(CENTRO_X, CENTRO_Y);
+            cout << DOT;
+        }
+        break;
+        case 4:{
+            locate(IZQUIERDA, ARRIBA);
+            cout << DOT;
+            locate(DERECHA, ABAJO);
+            cout << DOT;
+            locate(DERECHA, ARRIBA);
+            cout << DOT;
+            locate(IZQUIERDA, ABAJO);
+            cout << DOT;
+        }
+        break;
+        case 5:{
+            locate(IZQUIERDA, ARRIBA);
+            cout << DOT;
+            locate(DERECHA, ABAJO);
+            cout << DOT;
+            locate(DERECHA, ARRIBA);
+            cout << DOT;
+            locate(IZQUIERDA, ABAJO);
+            cout << DOT;
+            locate(CENTRO_X, CENTRO_Y);
+            cout << DOT;
+        }
+        break;
+        case 6:{
+            locate(IZQUIERDA, ARRIBA);
+            cout << DOT;
+            locate(DERECHA, ABAJO);
+            cout << DOT;
+            locate(DERECHA, ARRIBA);
+            cout << DOT;
+            locate(IZQUIERDA, ABAJO);
+            cout << DOT;
+            locate(DERECHA, CENTRO_Y);
+            cout << DOT;
+            locate(IZQUIERDA, CENTRO_Y);
+            cout << DOT;
+        }
+        break;
+    }
 }
 

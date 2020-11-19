@@ -1,5 +1,6 @@
 #ifndef CLIENTES_H_INCLUDED
 #define CLIENTES_H_INCLUDED
+#define ArchivoClientes "archivoclientes.dat"
 
 void MenuVerCliente ();
 
@@ -14,7 +15,6 @@ void MostrarCliente (clientes) ;
 
 int ListarClientes ();
 
-void CargarClienteNuevo (ventas);
 bool GuardarClienteNuevo (clientes);
 bool GuardarCliente (clientes, int);
 

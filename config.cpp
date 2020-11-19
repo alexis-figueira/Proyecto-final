@@ -12,15 +12,7 @@ using namespace rlutil;
 #include "ventas.h"
 #include "precios.h"
 #include "config.h"
-
-//const char *ArchivoVentas = "archivoventas.dat" ;
-const char *VentasBkp = "archivoventas.bkp" ;
-//const char *ArchivoStock = "archivostock.dat" ;
-const char *StockBkp ="archivostock.bkp" ;
-//const char *ArchivoPrecios = "archivoprecios.dat" ;
-const char *PreciosBkp ="archivoprecios.bkp" ;
-//const char *ArchivoClientes = "archivoclientes.dat" ;
-const char *ClientesBkp = "archivoclientes.bkp" ;
+#include "stock.h"
 
 
 
@@ -36,7 +28,7 @@ bool BkpClientes (){
         return false ;
     }
     FILE *f;
-    f=fopen ("archivoclientes.dat","rb");
+    f=fopen (ArchivoClientes,"rb");
     if (f==NULL){
         return false ;
     }
@@ -64,7 +56,7 @@ bool BkpVentas (){
         return false ;
     }
     FILE *f;
-    f=fopen ("archivoventas.dat","rb");
+    f=fopen (ArchivoVentas,"rb");
     if (f==NULL){
         return false ;
     }
@@ -80,45 +72,9 @@ bool BkpVentas (){
     return true ;
 }
 
-bool BkpStock (){
-    stock reg ;
-    FILE *f;
-    f=fopen ("archivostock.dat","rb");
-    if (f==NULL){
-        return false ;
-    }
-    fread (&reg,sizeof (stock), 1, f) ;
-    fclose (f);
-    f= fopen (StockBkp,"wb");
-    if (f==NULL){
-        return false ;
-    }
-    fseek (f,0,SEEK_SET);
-    fwrite (&reg,sizeof(clientes),1,f);
-    fclose (f);
-    return true ;
-}
-
-bool BkpPrecios (){
-    precios reg ;
-    FILE *f;
-    f=fopen ("archivoprecios.dat","rb");
-    if (f==NULL){
-        return false ;
-    }
-    fread (&reg,sizeof (precios), 1, f) ;
-    fclose (f);
-    f= fopen (PreciosBkp,"wb");
-    if (f==NULL){
-        return false ;
-    }
-    fseek (f,0,SEEK_SET);
-    fwrite (&reg,sizeof(precios),1,f);
-    fclose (f);
-    return true ;
-}
 
 /// ---------------------------------------------------------------------///
+
 
 bool RecuperarClientes (){
     clientes *vec;
@@ -139,7 +95,7 @@ bool RecuperarClientes (){
     fread (vec,sizeof (clientes), cant, f) ;
     fclose (f);
 
-    f= fopen ("archivoclientes.dat","wb");
+    f= fopen (ArchivoClientes,"wb");
     if (f==NULL){
         return false ;
     }
@@ -168,7 +124,7 @@ bool RecuperarVentas (){
     }
     fread (vec,sizeof (ventas), cant, f) ;
     fclose (f);
-    f= fopen ("archivoventas.dat","wb");
+    f= fopen (ArchivoVentas,"wb");
     if (f==NULL){
         return false ;
     }
@@ -178,49 +134,13 @@ bool RecuperarVentas (){
     return true ;
 }
 
-bool RecuperarStock (){
-     stock reg ;
-    FILE *f;
-    f=fopen (StockBkp,"rb");
-    if (f==NULL){
-        return false ;
-    }
-    fread (&reg,sizeof (stock), 1, f) ;
-    fclose (f);
-    f= fopen ("archivostock.dat","wb");
-    if (f==NULL){
-        return false ;
-    }
-    fseek (f,0,SEEK_SET);
-    fwrite (&reg,sizeof(clientes),1,f);
-    fclose (f);
-    return true ;
-}
-
-bool RecuperarPrecios (){
-    precios reg ;
-    FILE *f;
-    f=fopen (PreciosBkp,"rb");
-    if (f==NULL){
-        return false ;
-    }
-    fread (&reg,sizeof (precios), 1, f) ;
-    fclose (f);
-    f= fopen ("archivoprecios.dat","wb");
-    if (f==NULL){
-        return false ;
-    }
-    fseek (f,0,SEEK_SET);
-    fwrite (&reg,sizeof(precios),1,f);
-    fclose (f);
-    return true ;
-}
 
 /// ---------------------------------------------------------------------///
 
+
 bool BorrarClientes (){
     FILE *f;
-    f= fopen ("archivoclientes.dat","wb");
+    f= fopen (ArchivoClientes,"wb");
     if (f==NULL){
         return false ;
     }
@@ -230,34 +150,13 @@ bool BorrarClientes (){
 
 bool BorrarVentas (){
     FILE *f;
-    f= fopen ("archivoventas.dat","wb");
+    f= fopen (ArchivoVentas,"wb");
     if (f==NULL){
         return false ;
     }
     fclose (f);
     return true ;
 }
-
-bool BorrarStock (){
-    FILE *f;
-    f= fopen ("archivostock.dat","wb");
-    if (f==NULL){
-        return false ;
-    }
-    fclose (f);
-    return true ;
-}
-
-bool BorrarPrecios (){
-    FILE *f;
-    f= fopen ("archivoprecios.dat","wb");
-    if (f==NULL){
-        return false ;
-    }
-    fclose (f);
-    return true ;
-}
-
 
 bool BorrarBkpClientes (){
     FILE *f;
@@ -279,25 +178,6 @@ bool BorrarBkpVentas (){
     return true ;
 }
 
-bool BorrarBkpStock (){
-    FILE *f;
-    f= fopen (StockBkp,"wb");
-    if (f==NULL){
-        return false ;
-    }
-    fclose (f);
-    return true ;
-}
-
-bool BorrarBkpPrecios (){
-    FILE *f;
-    f= fopen (PreciosBkp,"wb");
-    if (f==NULL){
-        return false ;
-    }
-    fclose (f);
-    return true ;
-}
 
 /// ---------------------------------------------------------------------///
 
