@@ -13,16 +13,26 @@ using namespace rlutil ;
 #include "clientes.h"
 #include "config.h"
 #include "detallevta.h"
+#include "articulo.h"
 
-/// mas de 1 venta ;
-/// tipo de articulo (1-andador , 2-cama 3-baston etc) con la posibilidad de seguir agregando tipos ;
-/// COLOR DE STOCK
+/**
+- VER PORQUE NO FUNCIONA 'MOSTRARLISTAARTICULOS1 '
 
-//funcion itoa (cstdlib)
-// atoi (alreves)
-// atof (con float)
+- TIPO DE ARTICULO: (1-Andador, 2-Cama, 3-Baston etc). Con la posibilidad de seguir agregando tipos ;
 
-/*
+- REGISTROS:
+    Mostrar por fecha
+    Mostrar cliente con mas gastos
+    Mostrar cliente con menos gastos
+
+- VER BACK UP Y HACER LOS CAMBIOS
+*/
+
+/**
+    funcion itoa (cstdlib)
+    atoi (alreves)
+    atof (con float)
+
     char texto [10];
     itoa (15,texto,2);
     cout << texto ;
@@ -30,10 +40,11 @@ using namespace rlutil ;
     return 0;
 */
 
+
 int main(){
 
-
     initUI ();
+
     AperturaArchivos ();
     menu_principal ();
     cls ();

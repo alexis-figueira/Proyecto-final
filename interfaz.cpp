@@ -76,7 +76,7 @@ void func_hora(){
 
 void borrar_restopantalla(int y){
     int a, b ;
-    for (a=0; a<ancho_formato; a++){
+    for (a=0; a<=ancho_formato; a++){
         for (b=y ; b<alto_formato ; b++){
             gotoxy (a,b);
             cout << " " ;

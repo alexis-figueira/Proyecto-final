@@ -26,6 +26,19 @@ using namespace rlutil;
     };
 */
 
+int ObtenerIdCliente (){
+    int id , pos_cli;
+    srand (time(NULL));
+    id = rand () %1000+1;
+    pos_cli = BuscarCliente (id);
+    while (pos_cli>=0){
+        //srand (time(NULL));
+        id = rand () %1000+1;
+        pos_cli = BuscarCliente (id);
+    }
+    return id ;
+}
+
 void MenuVerCliente (){
     int id, pos ;
     clientes reg ;
@@ -41,8 +54,8 @@ void MenuVerCliente (){
         return ;
     }
     if (pos<0){
-        devolucion ("OCURRIÓ UN ERROR", "AMARILLO",ancho_formato,alto_formato);
-        titulo ("OCURRIÓ UN ERROR","AMARILLO",ancho_formato);
+        devolucion ("OCURRIÓ UN ERROR", "ROJO",ancho_formato,alto_formato);
+        titulo ("OCURRIÓ UN ERROR","ROJO",ancho_formato);
         anykey ();
         return ;
     }
@@ -138,7 +151,7 @@ int BuscarCliente (int id){ /// YA ESTA
         if (id==reg[x].GetId ()){
             pos = x ;
             free(reg);
-            return pos ; /// DEVUELVE POSICION
+            return pos ; /// DEVUELVE POSICION incluyendo 0
         }
     }
 
@@ -157,7 +170,7 @@ int BuscarDni (int dni){ /// Recibe dni y devuelve posicion
     reg = (clientes*) malloc (cant*sizeof(clientes));
     if (reg==NULL){
         free (reg);
-        return -2; /// error con la memoria interna
+        return -1; /// error con la memoria interna
     }
 
     FILE *f;
@@ -172,7 +185,7 @@ int BuscarDni (int dni){ /// Recibe dni y devuelve posicion
         if (dni==reg[x].GetDni ()){
             pos = x ;
             free(reg);
-            return pos ; /// DEVUELVE POSICION
+            return pos ; /// DEVUELVE POSICION incluyendo 0
         }
     }
 
@@ -256,7 +269,7 @@ int ListarClientes (){
     msj (" ",2,ancho_formato,"AZUL");
     setBackgroundColor (BLUE);
     gotoxy (1,x+7);
-    cout << " ID  |   Nombre   |     Apellido       |    DNI   |  Acumulado" << endl ;
+    cout << " ID  |      Nombre      |     Apellido       |    DNI   |  Acumulado" << endl ;
     setBackgroundColor (BLACK);
     guiones(ancho_formato);
 
@@ -269,18 +282,18 @@ int ListarClientes (){
             guiones (ancho_formato,19);
         }
         //if (vec[x].GetEstado()==true) {
-            gotoxy (1, cont+9);
+            gotoxy (2, cont+9);
             cout << vec[x].GetId ();
             gotoxy (6, cont+9);
             vec[x].GetNombre(texto);
             cout << "| " << texto;
-            gotoxy (19, cont+9);
+            gotoxy (25, cont+9);
             vec[x].GetApellido (texto);
             cout << "| " << texto;
-            gotoxy (40, cont+9) ;
+            gotoxy (46, cont+9) ;
             cout << "| " << vec[x].GetDni();
-            gotoxy (51, cont+9);
-            cout << "| $" << vec[x].GetAcumulado ();
+            gotoxy (57, cont+9);
+            cout << "|   $" << vec[x].GetAcumulado ();
             cout << endl ;
             cont ++ ;
         //}
@@ -315,7 +328,7 @@ clientes::clientes (int acu){
     id_cliente = 0 ;
 }
 
-clientes ::~clientes (){
+clientes::~clientes (){
 }
 
 void clientes::SetAcumulado (float valor){

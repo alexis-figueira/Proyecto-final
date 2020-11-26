@@ -10,6 +10,8 @@ void ListarArticulo (articulo);
 
 void MostrarUnArticulo (articulo);
 
+void MostrarListaArticulos1 ();
+
 void MostrarListaArticulos ();
 
 bool BuscarEstadoArt (int); /// Recibe posicion y devuelve estado
@@ -25,4 +27,6 @@ void CargarArticulo ();
 bool GuardarArticulo (articulo);
 
 bool GuardarArticulo (articulo, int);
+
+void OrdenarAritculos (articulo*,int);
 #endif // ARTICULO_H_INCLUDED

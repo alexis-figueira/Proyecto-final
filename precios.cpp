@@ -102,60 +102,102 @@ void CambiarPrecio (){
     }
 }
 
-
 ///-------------------------------------------------------------------------------
 
-
 void MostrarListaPrecios (){
-    articulo reg;
-    int cant=CantArt(), x, cont=8;
+    articulo *art;
+    int cant_art=CantArt(), x, cont=8,aux;
     char texto[25];
-    if (cant<0){
+    if (cant_art<0){
         devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato,alto_formato);
         titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato);
         anykey ();
         return ;
     }
-
-    FILE *f;
-    f=fopen (ArchivoArticulo, "rb");
-    if (f==NULL){
+    art = (articulo*) malloc (cant_art*sizeof(articulo));
+    if (art==NULL){
+        free (art);
         return ;
     }
+
+    FILE *f;
+    f = fopen (ArchivoArticulo, "rb");
+    if (f==NULL){
+        free (art);
+        return ;
+    }
+    fread (art, sizeof(articulo),cant_art,f);
+    fclose (f);
+
+    OrdenarAritculos (art,cant_art);
+
     cls ();
-    devolucion ("LISTA DE STOCK", "VERDE", ancho_formato,alto_formato);
-    titulo ("LISTA DE STOCK", "VERDE", ancho_formato);
-    gotoxy (12,6);
+    devolucion ("LISTA DE PRECIOS", "VERDE", ancho_formato,alto_formato);
+    titulo ("LISTA DE PRECIOS", "VERDE", ancho_formato);
+    gotoxy (15,6);
     cout << "        ARTÍCULO       | COD |  PRECIO" << endl ;
-    gotoxy (12,7);
+    gotoxy (15,7);
     cout << "-----------------------------------------" << endl ;
-    for (x=0; x<cant ; x++){
+
+    aux = art[0].GetTipoArt();
+    gotoxy (1,cont);
+    cout << "Andadores" ;
+
+    for (x=0; x<cant_art ; x++){
+
         if (cont ==20){
             anykey ();
-            cls ();
+            borrar_restopantalla(8);
             cont = 8 ;
         }
-        fread (&reg, sizeof(articulo),1,f);
-        reg.GetNombre(texto);
-        gotoxy (12,cont);
+
+        if (aux!=art[x].GetTipoArt()){
+            gotoxy (15,cont);
+            cout << "-----------------------------------------" << endl ;
+            cont ++ ;
+            gotoxy (1,cont);
+            switch (art[x].GetTipoArt()){
+            case 2 : cout << "Camas" ;
+                break;
+            case 3: cout << "Bastones" ;
+                break;
+            case 4 : cout << "Sillas" ;
+                break ;
+            case 5 : cout << "Otros";
+                break ;
+            }
+        }
+
+
+
+        art[x].GetNombre(texto);
+        gotoxy (15,cont);
         cout << texto ;
-        gotoxy (35,cont);
-        cout << "| " << reg.GetCodArt() ;
-        gotoxy (41,cont);
-        cout << "|   $" << reg.GetPrecio ();
-        gotoxy (54,cont);
-        if (reg.GetEstado()==true){
+        gotoxy (38,cont);
+        cout << "| " << art[x].GetCodArt() ;
+        gotoxy (44,cont);
+        cout << "|   $" << art[x].GetPrecio ();
+        gotoxy (57,cont);
+
+        if (art[x].GetStock()>6){
             setBackgroundColor(GREEN);
         }
         else {
-            setBackgroundColor(RED);
+            if (art[x].GetStock()>2){
+                setBackgroundColor (YELLOW);
+            }
+            else {
+                setBackgroundColor(RED);
+            }
         }
         cout << "   " ;
         setBackgroundColor (BLACK);
         cont ++ ;
+        aux = art[x].GetTipoArt();
     }
+    gotoxy (15,cont);
+    cout << "-----------------------------------------" << endl ;
     anykey ();
-    fclose (f);
 }
 
 void MostrarPrecioArticulo (articulo reg){

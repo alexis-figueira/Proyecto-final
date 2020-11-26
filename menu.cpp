@@ -11,6 +11,7 @@ using namespace rlutil ;
 #include "clientes.h"
 #include "config.h"
 #include "articulo.h"
+#include "detallevta.h"
 
 
 void AperturaArchivos (){
@@ -112,27 +113,31 @@ void menu_ventas (){
             NuevaVenta();
         break ;}
         {case '2': /// Cancelar venta
-            int id , pos;
+            int id , pos_vta, cant_detalle, pos_cli, pos_art, z ;
             char opcion ;
-            ventas reg ;
+            detalle det [15];
+            ventas vta ;
+            articulo art ;
+            clientes cli ;
             cls ();
             devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
             titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
             gotoxy (1,alto_formato/2);
-            msj ("ingrese el id de la venta que quiere cancelar: ", 2, ancho_formato); cin >> id ;
-            pos =BuscarVenta (id);
-            if (pos==-2){
+            msj ("Ingrese el número de venta que quiere cancelar: ", 2, ancho_formato); cin >> id ;
+            pos_vta =BuscarVenta (id);
+            if (pos_vta==-2){
                 devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
                 titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
                 anykey ();
             }else {
-                if (pos==-1){
+                if (pos_vta==-1){
                     devolucion ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato, alto_formato);
                     titulo ("OCURRIÓ UN ERROR CON LOS ARCHIVOS","ROJO", ancho_formato);
                     anykey ();
                 }else {
-                    reg = LeerVenta (pos);
-                    MostrarVenta (reg);
+                    vta = LeerVenta (pos_vta);
+                    cant_detalle = LeerTodoDetalle (vta.GetNumVenta(),det);
+                    MostrarDetalleVenta(cant_detalle, det, vta);
                     gotoxy (1, alto_formato-8);
                     msj ("¿Está seguro de eliminar esta venta?",2,ancho_formato,"ROJO"); cout << endl ;
                     msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
@@ -143,17 +148,29 @@ void menu_ventas (){
                         case 'S':
                             bool grabo ;
                             cls ();
-                            reg.CancelarVenta ();
-                            grabo=GuardarVenta(reg,pos);
+                            vta.CancelarVenta ();
+                            grabo=GuardarVenta(vta,pos_vta);
                             if (grabo==true){
                                 cls ();
                                 devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
                                 titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
                                 gotoxy (1,alto_formato/2);
-                                msj ("La venta fue dada de baja exitosamenta", 2, ancho_formato,"VERDE") ;
+                                msj ("La venta fue dada de baja exitosamente", 2, ancho_formato,"VERDE") ;
                                 hidecursor();
                                 anykey ();
                                 showcursor ();
+
+                                pos_cli = BuscarCliente (vta.GetIdCliente());
+                                cli = LeerCliente (pos_cli);
+                                cli.SetAcumulado (-1* vta.GetValorVenta());
+                                GuardarCliente (cli,pos_cli);
+
+                                for (z=0 ; z<cant_detalle ; z++){
+                                    pos_art = BuscarArticulo (det[z].GetCodArt());
+                                    art = LeerArticulo (pos_art);
+                                    art.SetStock (det[z].GetCantVenta());
+                                    GuardarArticulo(art,pos_art);
+                                }
                             }
                             opc=true ;
                             break ;
@@ -188,8 +205,9 @@ void menu_ventas (){
             }
         break ;}
         {case '3': /// Mostrar una venta
-            int id, x;
-            ventas reg ;
+            int id, x, cant_det;
+            ventas vta ;
+            detalle dle [15];
             cls ();
             devolucion ("VENTA", "MAGENTA", ancho_formato, alto_formato) ;
             titulo ("VENTA", "MAGENTA", ancho_formato) ;
@@ -209,14 +227,15 @@ void menu_ventas (){
                 return ;
             }
 
-            reg = LeerVenta (x);
-            if (reg.GetEstado()==false ){
+            vta = LeerVenta (x);
+            if (vta.GetEstado()==false ){
                 devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
                 titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
                 anykey ();
                 return ;
             }
-            MostrarVenta (reg);
+            cant_det = LeerTodoDetalle (vta.GetNumVenta(), dle);
+            MostrarDetalleVenta (cant_det,dle,vta);
             break ;}
         {case '4': /// Listar ventas
             int x ;
@@ -323,7 +342,6 @@ void menu_ventas (){
         {case '0':
             estado = false ;
         break ;}
-
         {default :
             cls ();
             devolucion ("ERROR DE OPCIÓN", "ROJO", ancho_formato, alto_formato) ;
@@ -718,17 +736,16 @@ void menu_precios (){
 
 void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
     char opcion_menu, opcion ;
-    bool estado=true, grabo ;
+    bool estado=true, grabo, grabo1;
     while (estado==true){
         cls ();
         devolucion ("AJUSTES","AMARILLO", ancho_formato, alto_formato);
         titulo ("AJUSTES","AMARILLO", ancho_formato);
 
-        msj ("01. Eliminar todas las ventas.", 2,ancho_formato); cout << endl ;
-        msj ("02. Eliminar lista de precios.", 2,ancho_formato); cout << endl ;
-        msj ("03. Eliminar stock.", 2,ancho_formato); cout << endl ;
-        msj ("04. Eliminar todos los clientes.", 2,ancho_formato); cout << endl ;
-        msj ("05. Recuperar datos.", 2,ancho_formato); cout << endl ;
+        msj ("01. Eliminar ventas.", 2,ancho_formato); cout << endl ;
+        msj ("02. Eliminar Articulos.", 2,ancho_formato); cout << endl ;
+        msj ("03. Eliminar clientes.", 2,ancho_formato); cout << endl ;
+        msj ("04. Recuperar datos.", 2,ancho_formato); cout << endl ;
 
         guiones (ancho_formato);
 
@@ -758,9 +775,11 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                 if (opcion== 's'|| opcion =='S'){
                     setColor(BLACK);
                     grabo=BkpVentas();
-                    if (grabo==true){
+                    grabo1=BkpDetalle ();
+                    if (grabo==true && grabo1==true){
                         grabo = BorrarVentas ();
-                        if (grabo==true){
+                        grabo1 = BorrarDetalle ();
+                        if (grabo==true && grabo1==true){
                             cls ();
                             devolucion ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato, alto_formato);
                             titulo ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato);
@@ -775,7 +794,7 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                     }
                 }
                 break ;}
-            {case '2':  /// BORRAR PRECIOS
+            {case '2':  /// BORRAR ARTICULOS
                 cls ();
                 setColor (RED);
                 gotoxy (1,alto_formato/2);
@@ -791,9 +810,9 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                 }
                 if (opcion== 's'|| opcion =='S'){
                     setColor(BLACK);
-                    //grabo=BkpPrecios();
+                    grabo=BkpArticulo();
                     if (grabo==true){
-                        //grabo = BorrarPrecios ();
+                        grabo = BorrarArticulo ();
                         if (grabo==true){
                             cls ();
                             devolucion ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato, alto_formato);
@@ -809,41 +828,7 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                     }
                 }
                 break ;}
-            {case '3':  /// BORRAR STOCK
-                cls ();
-                setColor (RED);
-                gotoxy (1,alto_formato/2);
-                msj ("ESTA SEGURO DE ELIMINAR LOS DATOS?(S/N): ",2,ancho_formato) ;cin >> opcion;
-                while (opcion !='s' && opcion !='S' && opcion !='N' && opcion !='n'){
-                    devolucion ("CARÁCTER INCORRECTO","BLANCO", ancho_formato, alto_formato);
-                    titulo ("CARÁCTER INCORRECTO","BLANCO", ancho_formato);
-                    anykey ();
-                    cls ();
-                    setColor (RED);
-                    gotoxy (1,alto_formato/2);
-                    msj ("ESTA SEGURO DE ELIMINAR LOS DATOS?(S/N): ",2,ancho_formato) ;cin >> opcion;
-                }
-                if (opcion== 's'|| opcion =='S'){
-                    setColor(BLACK);
-                    //grabo=BkpStock();
-                    if (grabo==true){
-                       // grabo = BorrarStock ();
-                        if (grabo==true){
-                            cls ();
-                            devolucion ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato, alto_formato);
-                            titulo ("SE ELIMINARON LOS DATOS","BLANCO", ancho_formato);
-                            anykey ();
-                        }
-                        else {
-                            cls ();
-                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato, alto_formato);
-                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato);
-                            anykey ();
-                        }
-                    }
-                }
-                break ;}
-            {case '4':  /// BORRAR CLIENTES
+            {case '3':  /// BORRAR CLIENTES
                 cls ();
                 setColor (RED);
                 gotoxy (1,alto_formato/2);
@@ -877,7 +862,7 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                     }
                 }
                 break ;}
-            {case '5':
+            {case '4':
                 menu_recuperar_datos ();
                 break ;}
             {case '0':
@@ -899,16 +884,15 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
 
 void menu_recuperar_datos (){
     char opcion_menu ;
-    bool estado=true, recupero ;
+    bool estado=true, recupero, recupero1 ;
     while (estado==true){
         cls ();
         devolucion ("BACKUP","AMARILLO", ancho_formato, alto_formato);
         titulo ("BACKUP","AMARILLO", ancho_formato);
 
         msj ("01. Recuperar datos de ventas.", 2,ancho_formato); cout << endl ;
-        msj ("02. Recuperar datos de precios.", 2,ancho_formato); cout << endl ;
-        msj ("03. Recuperar datos de stock.", 2,ancho_formato); cout << endl ;
-        msj ("04. Recuperar datos de clientes.", 2,ancho_formato); cout << endl ;
+        msj ("02. Recuperar datos de artículos.", 2,ancho_formato); cout << endl ;
+        msj ("03. Recuperar datos de clientes.", 2,ancho_formato); cout << endl ;
 
         guiones (ancho_formato);
 
@@ -922,8 +906,10 @@ void menu_recuperar_datos (){
         switch (opcion_menu) {
             case '1': /// Recuperar datos de ventas
                 recupero=RecuperarVentas ();
-                if(recupero==true){
+                recupero1= RecuperarDetalle ();
+                if(recupero==true&&recupero1==true){
                     BorrarBkpVentas ();
+                    BorrarBkpDetalle ();
                     cls ();
                     devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
                     titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
@@ -937,10 +923,10 @@ void menu_recuperar_datos (){
 
                 }
                 break ;
-            case '2': /// Recuperar datos de precios
-                //recupero=RecuperarPrecios ();
+            case '2': /// Recuperar datos de articulos
+                recupero=RecuperarArticulo ();
                 if(recupero==true){
-                    //BorrarBkpPrecios ();
+                    BorrarBkpArticulo ();
                     cls ();
                     devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
                     titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
@@ -954,25 +940,7 @@ void menu_recuperar_datos (){
 
                 }
                 break ;
-            case '3': /// Recuperar datos de stock
-                //recupero=RecuperarStock ();
-                if(recupero==true){
-                    //BorrarBkpStock ();
-                    cls ();
-                    devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
-                    anykey ();
-                }
-                else {
-                    cls ();
-                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato);
-                    anykey ();
-
-                }
-                //RecuperarStock ();
-                break ;
-            case '4': /// Recuperar datos de clientes
+            case '3': /// Recuperar datos de clientes
                 recupero=RecuperarClientes ();
                 if(recupero==true){
                     BorrarBkpClientes ();

@@ -2,35 +2,37 @@
 #define CONFIG_H_INCLUDED
 
 #define VentasBkp "archivoventas.bkp"
-#define StockBkp "archivostock.bkp"
-#define PreciosBkp "archivoprecios.bkp"
+#define ArticulosBkp "archivoarticulos.bkp"
+#define DetallesBkp "archivodetalles.bkp"
 #define ClientesBkp "archivoclientes.bkp"
 
 
 
+
+bool BkpArticulo ();
+bool BkpDetalle ();
 bool BkpClientes ();
-bool BkpPrecios ();
 bool BkpVentas ();
-bool BkpStock ();
 
 bool RecuperarVentas ();
-bool RecuperarStock ();
 bool RecuperarClientes ();
-bool RecuperarPrecios ();
+bool RecuperarArticulo ();
+bool RecuperarDetalle ();
 
 bool BorrarClientes ();
 bool BorrarVentas ();
-bool BorrarStock ();
-bool BorrarPrecios ();
+bool BorrarArticulo ();
+bool BorrarDetalle ();
 
 bool BorrarBkpClientes ();
 bool BorrarBkpVentas ();
-bool BorrarBkpStock ();
-bool BorrarBkpPrecios ();
+bool BorrarBkpArticulo ();
+bool BorrarBkpDetalle ();
 
 int CantClientesBkp ();
 int CantVentasBkp ();
-
+int CantDetallesBkp ();
+int CantArticuloBkp ();
 
 
 

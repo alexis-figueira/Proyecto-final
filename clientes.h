@@ -3,6 +3,8 @@
 #define ArchivoClientes "archivoclientes.dat"
 
 void MenuVerCliente ();
+int ObtenerIdCliente ();
+
 
 int BuscarCliente (int);
 int BuscarDni (int);

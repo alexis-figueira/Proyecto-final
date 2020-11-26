@@ -1,10 +1,6 @@
 #ifndef CLASES_H_INCLUDED
 #define CLASES_H_INCLUDED
 
-
-
-
-
 struct fecha {
     int dia, mes, anio;
 };
@@ -14,18 +10,21 @@ private:
     fecha fec_compra ;
     int num_venta ;
     int id_cliente ;
-    //
+    /*
     int cod_art ;
     int cant_venta ;
-    //
+    */
     float valor_venta ;
     bool estado ;
 
 public:
+
+    ventas ();
+    ventas (int);
+    ~ventas ();
+
     void CancelarVenta ();
 
-    int GetCodArt ();
-    void SetCodArt (int);
 
     int GetNumVenta ();
     void SetNumVenta (int);
@@ -39,16 +38,13 @@ public:
     bool GetEstado ();
     void SetEstado (bool);
 
-    int GetCantVenta ();
-    void SetCantVenta (int);
-
     void MostrarFechaVenta ();
     void SetFecCompra (fecha);
 };
 
 class detalle {
 private:
-    int num_venta ;
+    int num_venta ; //
     int num_detalle ;
     int cod_art ;
     int cant_venta ;
@@ -111,7 +107,7 @@ public:
 
 class articulo {
 private:
-    /// int tipo_art ;
+    int tipo_art ;
     char nombre [25];
     int cod ;
     int stock ;
@@ -121,6 +117,9 @@ public:
 
     articulo ();
     ~articulo ();
+
+    int GetTipoArt ();
+    void SetTipoArt (int);
 
     void GetNombre (char*);
     void SetNombre (char*);

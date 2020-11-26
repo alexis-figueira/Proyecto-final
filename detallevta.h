@@ -11,11 +11,11 @@ int BuscarDetalle (int, int);
 
 
 
-int LeerDetalle (int, detalle*); // recibe numero de venta y vector detalle, devuelve vector de los detalles y cantidad de detalles.
+int LeerTodoDetalle (int, detalle*); // recibe numero de venta y vector detalle, devuelve vector de los detalles y cantidad de detalles.
 detalle LeerUnDetalle (int, int);
 
 void MostrarUnDetalle (detalle);
-void MostrarDetalleVenta (detalle*);
+void MostrarDetalleVenta (int cant, detalle* dle,ventas); /// falta hacer
 
 void ListarDetalleVenta (int);
 

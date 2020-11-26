@@ -7,6 +7,7 @@ using namespace rlutil ;
 #include "clases.h"
 #include "ventas.h"
 #include "detallevta.h"
+#include "articulo.h"
 
 bool GuardarDetalle (detalle dle){
     FILE *f ;
@@ -70,7 +71,7 @@ int BuscarDetalle (int vta, int det){
 }
 */
 
-int LeerDetalle (int num_vta, detalle *dle){ // esta
+int LeerTodoDetalle (int num_vta, detalle *dle){ // devuelve cant de detalles, y un vector del detalle
     detalle reg (0);
     int cant=CantDetalle (),x, cont=0;
     if (cant == -1){
@@ -84,15 +85,15 @@ int LeerDetalle (int num_vta, detalle *dle){ // esta
     for (x=0 ; x<cant ; x++){
         fread(&reg,sizeof (detalle),1,f);
         if (reg.GetNumVenta()==num_vta){
-            dle[cant]=reg ;
-            cant ++ ;
+            dle[cont]=reg ;
+            cont ++ ;
         }
     }
-    return cant ; /// 0 no encontro venta, <0 error y >0 cantidad
+    return cont ; /// 0 no encontro venta // <0 error  // >0 cantidad del detalle
     fclose (f);
 }
 
-detalle LeerUnDetalle (int vta,int det){
+detalle LeerUnDetalle (int vta,int det){ //recibe #venta y #detalle y devuelve el detalle.
     detalle dle (0) ;
     int pos, cant=CantDetalle () ,x , nvta , ndet;
     if (cant==-1){
@@ -117,7 +118,7 @@ detalle LeerUnDetalle (int vta,int det){
 
 }
 
-void MostrarUnDetalle (detalle dle){ /// falta hacer
+void MostrarUnDetalle (detalle dle){ /// falta cambiar formato
     detalle reg (0);
     reg.SetNumVenta (15);
     reg.SetNumDetalle (1);
@@ -134,9 +135,48 @@ void MostrarUnDetalle (detalle dle){ /// falta hacer
     anykey ();
 }
 
-void MostrarDetalleVenta (detalle* dle){ /// falta hacer
+void MostrarDetalleVenta (int cant, detalle* dle,ventas vta){ /// falta hacer
+    articulo art ;
+    int pos_art,x;
+    char texto [25];
+    cls();
+    devolucion ("DETALLE DE VENTA","MAGENTA",ancho_formato,alto_formato);
+    titulo ("DETALLE DE VENTA", "MAGENTA",ancho_formato);
+    gotoxy(1,7);
+    msj ("VENTA ",2,ancho_formato-10,"VERDE");
+    gotoxy (38,7);
+    setBackgroundColor(GREEN);
+    cout << dle[0].GetNumVenta() << endl ;
+    setBackgroundColor (BLACK);
+    gotoxy (1,11);
+    vta.MostrarFechaVenta ();
+    gotoxy (1,9);
+    cout << "FECHA          Cod           Descripción          Cant  Monto  " << endl ;
+    guiones (ancho_formato);
+    for (x=0 ; x<cant ; x++){
+        pos_art = BuscarArticulo (dle[x].GetCodArt()) ;
+        art = LeerArticulo (pos_art);
+        gotoxy (14,x+11);
+        cout << "| " << dle[x].GetCodArt ();
+        gotoxy (20,x+11);
+        art.GetNombre (texto);
+        cout << "| " << texto ;
+        gotoxy (50,x+11);
+        cout << "| " << dle[x].GetCantVenta();
+        gotoxy (55,x+11);
+        cout << "| $" << dle[x].GetValorDetalle () << endl;
+    }
+    guiones(ancho_formato);
+    gotoxy (22,x+12);
+    cout << "Total" ;
+    gotoxy (57, x+12);
+    cout << "$" <<vta.GetValorVenta ();
 
+    hidecursor ();
+    anykey ();
+    showcursor();
 }
+
 
 void ListarDetalleVenta (int id_venta){
 }

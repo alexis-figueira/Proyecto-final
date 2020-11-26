@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1605313009 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\main.cpp
+1606256139 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\main.cpp
 	<iostream>
 	<cstdlib>
 	"rlutil.h"
@@ -13,6 +13,7 @@
 	"clientes.h"
 	"config.h"
 	"detallevta.h"
+	"articulo.h"
 
 1593748668 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\rlutil.h
 	<iostream>
@@ -30,7 +31,7 @@
 
 1605291664 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\interfaz.h
 
-1605292260 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\interfaz.cpp
+1605828614 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\interfaz.cpp
 	<iostream>
 	<cstdio>
 	<cstdlib>
@@ -39,7 +40,7 @@
 	"rlutil.h"
 	"interfaz.h"
 
-1605300319 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\menu.cpp
+1606341138 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\menu.cpp
 	<iostream>
 	"rlutil.h"
 	"interfaz.h"
@@ -51,12 +52,13 @@
 	"clientes.h"
 	"config.h"
 	"articulo.h"
+	"detallevta.h"
 
 1604778268 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\menu.h
 
-1605309840 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clases.h
+1606250471 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clases.h
 
-1605300473 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\ventas.cpp
+1606168708 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\ventas.cpp
 	<iostream>
 	<cstdlib>
 	"rlutil.h"
@@ -67,8 +69,9 @@
 	"clientes.h"
 	"stock.h"
 	"articulo.h"
+	"detallevta.h"
 
-1604012876 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\validaciones.cpp
+1606253199 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\validaciones.cpp
 	<iostream>
 	<cstdio>
 	<cstdlib>
@@ -80,9 +83,9 @@
 
 1604883448 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\ventas.h
 
-1603315953 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\validaciones.h
+1606253015 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\validaciones.h
 
-1605050930 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\precios.cpp
+1606344370 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\precios.cpp
 	<iostream>
 	<cstdio>
 	<cstdlib>
@@ -96,7 +99,7 @@
 
 1604866576 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\precios.h
 
-1605133282 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\stock.cpp
+1606344235 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\stock.cpp
 	<iostream>
 	<cstdlib>
 	"rlutil.h"
@@ -107,9 +110,9 @@
 
 1604625197 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\stock.h
 
-1604888585 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clientes.h
+1606164508 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clientes.h
 
-1605045325 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clientes.cpp
+1606169926 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\clientes.cpp
 	<iostream>
 	<cstdio>
 	<cstdlib>
@@ -120,7 +123,7 @@
 	"clases.h"
 	"clientes.h"
 
-1604779224 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\config.cpp
+1606341957 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\config.cpp
 	<iostream>
 	<cstdio>
 	<cstdlib>
@@ -131,13 +134,14 @@
 	"clases.h"
 	"clientes.h"
 	"ventas.h"
-	"precios.h"
 	"config.h"
 	"stock.h"
+	"detallevta.h"
+	"articulo.h"
 
-1604537249 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\config.h
+1606340024 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\config.h
 
-1605300131 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\articulo.cpp
+1606344235 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\articulo.cpp
 	<iostream>
 	<cstdio>
 	<cstdlib>
@@ -152,11 +156,11 @@
 	"stock.h"
 	"validaciones.h"
 
-1604868542 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\articulo.h
+1606255182 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\articulo.h
 
-1605312888 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\detallevta.h
+1606081204 c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\detallevta.h
 
-1605312600 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\detallevta.cpp
+1606173354 source:c:\backup\zz pollo\facu utn\1er año\2do cuatri\lab ii\proyecto final\proyecto final\detallevta.cpp
 	<iostream>
 	<cstdlib>
 	"rlutil.h"
@@ -164,4 +168,5 @@
 	"clases.h"
 	"ventas.h"
 	"detallevta.h"
+	"articulo.h"
 

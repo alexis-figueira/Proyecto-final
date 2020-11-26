@@ -10,11 +10,66 @@ using namespace rlutil;
 #include "clases.h"
 #include "clientes.h"
 #include "ventas.h"
-#include "precios.h"
 #include "config.h"
 #include "stock.h"
+#include "detallevta.h"
+#include "articulo.h"
 
+bool BkpDetalle (){
+    detalle *vec;
+    int cant = CantDetalle();
+    if (cant ==-1){
+        return false ; /// error de lectura de archivos
+    }
+    vec = (detalle*) malloc (cant*sizeof (detalle));
+    if (vec==NULL){
+        free(vec);
+        return false ;
+    }
+    FILE *f;
+    f=fopen (ArchivoDetalle,"rb");
+    if (f==NULL){
+        return false ;
+    }
+    fread (vec,sizeof (detalle), cant, f) ;
+    fclose (f);
+    f= fopen (DetallesBkp,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fseek (f,0,SEEK_SET);
+    fwrite (vec,sizeof(detalle),cant,f);
+    fclose (f);
+    return true ;
+}
 
+bool BkpArticulo (){
+    articulo *vec;
+    int cant = CantArt();
+    if (cant ==-1){
+        return false ; /// error de lectura de archivos
+    }
+    vec = (articulo*) malloc (cant*sizeof (articulo));
+    if (vec==NULL){
+        free(vec);
+        return false ;
+    }
+    FILE *f;
+    f=fopen (ArchivoArticulo,"rb");
+    if (f==NULL){
+        return false ;
+    }
+    fread (vec,sizeof (articulo), cant, f) ;
+    fclose (f);
+    f= fopen (ArticulosBkp,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fseek (f,0,SEEK_SET);
+    fwrite (vec,sizeof(articulo),cant,f);
+    fclose (f);
+    return true ;
+}
 
 bool BkpClientes (){
     clientes *vec;
@@ -107,7 +162,7 @@ bool RecuperarClientes (){
 }
 
 bool RecuperarVentas (){
-     ventas *vec;
+    ventas *vec;
     int cant = CantVentasBkp ();
     if (cant ==-1){
         return false ; /// error de lectura de archivos
@@ -134,6 +189,63 @@ bool RecuperarVentas (){
     return true ;
 }
 
+bool RecuperarDetalle (){
+    detalle *vec;
+    int cant = CantDetallesBkp ();
+    if (cant ==-1){
+        return false ; /// error de lectura de archivos
+    }
+    vec = (detalle*) malloc (cant*sizeof (detalle));
+    if (vec==NULL){
+        free(vec);
+        return false ;
+    }
+    FILE *f;
+    f=fopen (DetallesBkp,"rb");
+    if (f==NULL){
+        return false ;
+    }
+    fread (vec,sizeof (detalle), cant, f) ;
+    fclose (f);
+    f= fopen (ArchivoDetalle,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fseek (f,0,SEEK_SET);
+    fwrite (vec,sizeof(detalle),cant,f);
+    fclose (f);
+    return true ;
+}
+
+bool RecuperarArticulo (){
+    articulo *vec;
+    int cant = CantArticuloBkp ();
+    if (cant ==-1){
+        return false ; /// error de lectura de archivos
+    }
+    vec = (articulo*) malloc (cant*sizeof (articulo));
+    if (vec==NULL){
+        free(vec);
+        return false ;
+    }
+    FILE *f;
+    f=fopen (ArticulosBkp,"rb");
+    if (f==NULL){
+        return false ;
+    }
+    fread (vec,sizeof (articulo), cant, f) ;
+    fclose (f);
+    f= fopen (ArchivoArticulo,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fseek (f,0,SEEK_SET);
+    fwrite (vec,sizeof(articulo),cant,f);
+    fclose (f);
+    return true ;
+}
+
+
 
 /// ---------------------------------------------------------------------///
 
@@ -158,6 +270,28 @@ bool BorrarVentas (){
     return true ;
 }
 
+bool BorrarArticulo (){
+    FILE *f;
+    f= fopen (ArchivoArticulo,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fclose (f);
+    return true ;
+}
+
+bool BorrarDetalle (){
+    FILE *f;
+    f= fopen (ArchivoDetalle,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fclose (f);
+    return true ;
+}
+
+/// ---------------------------------------------------------------------///
+
 bool BorrarBkpClientes (){
     FILE *f;
     f= fopen (ClientesBkp,"wb");
@@ -178,6 +312,25 @@ bool BorrarBkpVentas (){
     return true ;
 }
 
+bool BorrarBkpArticulo (){
+    FILE *f;
+    f= fopen (ArticulosBkp,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fclose (f);
+    return true ;
+}
+
+bool BorrarBkpDetalle (){
+    FILE *f;
+    f= fopen (DetallesBkp,"wb");
+    if (f==NULL){
+        return false ;
+    }
+    fclose (f);
+    return true ;
+}
 
 /// ---------------------------------------------------------------------///
 
@@ -203,7 +356,32 @@ int CantVentasBkp (){
     }
     fseek (f,0,SEEK_END);
     bts=ftell (f);
-    cant=bts /sizeof(clientes);
+    cant=bts /sizeof(ventas);
     return cant ;
 }
 
+int CantDetallesBkp (){
+    int bts, cant;
+    FILE *f;
+    f=fopen (DetallesBkp, "rb") ;
+    if (f==NULL){
+        return -1 ;
+    }
+    fseek (f,0,SEEK_END);
+    bts=ftell (f);
+    cant=bts /sizeof(detalle);
+    return cant ;
+}
+
+int CantArticuloBkp (){
+    int bts, cant;
+    FILE *f;
+    f=fopen (ArticulosBkp, "rb") ;
+    if (f==NULL){
+        return -1 ;
+    }
+    fseek (f,0,SEEK_END);
+    bts=ftell (f);
+    cant=bts /sizeof(articulo);
+    return cant ;
+}

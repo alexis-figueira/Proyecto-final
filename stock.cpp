@@ -170,6 +170,102 @@ void StockInvalido (){ ///LISTO a revisar
 }
 
 void MostrarListaStock (){ ///LISTO a revisar
+    articulo *art;
+    int cant_art=CantArt(), x, cont=8, aux;
+    char texto[25];
+    if (cant_art<0){
+        devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato,alto_formato);
+        titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato);
+        anykey ();
+        return ;
+    }
+    art = (articulo*) malloc (cant_art*sizeof(articulo));
+    if (art==NULL){
+        free (art);
+        return ;
+    }
+
+    FILE *f;
+    f = fopen (ArchivoArticulo, "rb");
+    if (f==NULL){
+        free (art);
+        return ;
+    }
+    fread (art, sizeof(articulo),cant_art,f);
+    fclose (f);
+
+    OrdenarAritculos (art,cant_art);
+
+
+
+    cls ();
+    devolucion ("LISTA DE STOCK", "VERDE", ancho_formato,alto_formato);
+    titulo ("LISTA DE STOCK", "VERDE", ancho_formato);
+    gotoxy (15,6);
+    cout << "        ARTÍCULO       | COD | STOCK" << endl ;
+    gotoxy (15,7);
+    cout << "---------------------------------------" << endl ;
+
+    aux = art[0].GetTipoArt();
+    gotoxy (1,cont);
+    cout << "Andadores" ;
+
+
+    for (x=0; x<cant_art ; x++){
+        if (cont ==20){
+            anykey ();
+            borrar_restopantalla (8);
+            cont = 8 ;
+        }
+
+        if (aux!=art[x].GetTipoArt()){
+            gotoxy (15,cont);
+            cout << "---------------------------------------" << endl ;
+            cont ++ ;
+            gotoxy (1,cont);
+            switch (art[x].GetTipoArt()){
+            case 2 : cout << "Camas" ;
+                break;
+            case 3: cout << "Bastones" ;
+                break;
+            case 4 : cout << "Sillas" ;
+                break ;
+            case 5 : cout << "Otros";
+                break ;
+
+            }
+        }
+        art[x].GetNombre(texto);
+        gotoxy (15,cont);
+        cout << texto ;
+        gotoxy (38,cont);
+        cout << "| " << art[x].GetCodArt() ;
+        gotoxy (44,cont);
+        cout << "|   " << art[x].GetStock ();
+        gotoxy (55,cont);
+        if (art[x].GetStock()>6){
+            setBackgroundColor(GREEN);
+        }
+        else {
+            if (art[x].GetStock()>2){
+                setBackgroundColor (YELLOW);
+            }
+            else {
+                setBackgroundColor(RED);
+            }
+        }
+        cout << "   " ;
+        setBackgroundColor (BLACK);
+        cont ++ ;
+        aux = art[x].GetTipoArt();
+    }
+    gotoxy (15,cont);
+    cout << "---------------------------------------" << endl ;
+    anykey ();
+}
+
+/*
+void MostrarListaStock (){ ///LISTO a revisar
     articulo reg;
     int cant=CantArt(), x, cont=8;
     char texto[25];
@@ -207,11 +303,16 @@ void MostrarListaStock (){ ///LISTO a revisar
         gotoxy (44,cont);
         cout << "|   " << reg.GetStock ();
         gotoxy (55,cont);
-        if (reg.GetEstado()==true){
+        if (reg.GetStock()>6){
             setBackgroundColor(GREEN);
         }
         else {
-            setBackgroundColor(RED);
+            if (reg.GetStock()>2){
+                setBackgroundColor (YELLOW);
+            }
+            else {
+                setBackgroundColor(RED);
+            }
         }
         cout << "   " ;
         setBackgroundColor (BLACK);
@@ -220,6 +321,7 @@ void MostrarListaStock (){ ///LISTO a revisar
     anykey ();
     fclose (f);
 }
+*/
 
 void MostrarStockArticulo (int pos){ /// LISTO a revisar
     char texto [25];

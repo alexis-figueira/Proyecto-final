@@ -11,6 +11,8 @@ using namespace rlutil;
 
 
 
+
+
 int ValidarTexto (char* texto){
     if (texto[0]== ' ' || texto[0]==NULL){
         return 0 ;
@@ -35,7 +37,7 @@ int ValidarMail (char *texto){
     return 0 ;
 }
 
-int validar_fecha(int d, int m, int y){
+int validarFecha(int d, int m, int y){
     int i;
     bool bisiesto = false;
     //comprobamos si el año es bisiesto
@@ -62,9 +64,9 @@ int validar_fecha(int d, int m, int y){
     }
 }
 
-int validar_edad (int d, int m, int y, int ed){
+int validarEdad (int d, int m, int y, int ed){
     int edad ;
-    if (validar_fecha(d,m,y)!=0){
+    if (validarFecha(d,m,y)!=0){
         return -0 ; /// fecha invalida
     }
     time_t tiempo;

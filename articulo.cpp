@@ -77,11 +77,16 @@ void ListarArticulo (articulo reg){ /// FALTA TERMINAR
     char texto [25];
     reg.GetNombre(texto);
     cout << "    Artículo: " << texto << " | COD: " << reg.GetCodArt() << " | STOCK: " << reg.GetStock () << " | PRECIO: $" << reg.GetPrecio ()<< " " ;
-    if (reg.GetEstado()==true){
-        setBackgroundColor (GREEN);
+    if (reg.GetStock()>6){
+        setBackgroundColor(GREEN);
     }
     else {
-        setBackgroundColor(RED);
+        if (reg.GetStock()>2){
+            setBackgroundColor (YELLOW);
+        }
+        else {
+            setBackgroundColor(RED);
+        }
     }
     cout << "   "  ;
     setBackgroundColor(BLACK);
@@ -99,7 +104,24 @@ void CargarArticulo (){
     cls ();
     devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
     titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
+    gotoxy (1,alto_formato-2);
+    msj ("1.Andadores | 2.Camas | 3.Bastones | 4.Sillas | 5.Otros",2,ancho_formato);
     gotoxy (1,6);
+    msj ("Tipo de art: ",2,ancho_formato);
+    cin >> x ;
+    while (x>6 || x<1){
+        devolucion ("TIPO DE ARTÍCULO INCORRECTO", "ROJO",ancho_formato,alto_formato);
+        titulo ("TIPO DE ARTÍCULO INCORRECTO","ROJO",ancho_formato);
+        anykey ();
+        devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
+        titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
+        borrar_renglon (6);
+        msj ("Tipo de art: ", 2, ancho_formato);
+        cin >> x ;
+    }
+    reg.SetTipoArt (x);
+    borrar_renglon (alto_formato-2);
+    gotoxy (1,7);
     msj ("Nombre del Artículo: ",2, ancho_formato-9);
     cin.ignore ();
     cin.getline (texto, 25);
@@ -110,7 +132,7 @@ void CargarArticulo (){
         anykey ();
         devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
         titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
-        borrar_renglon (6);
+        borrar_renglon (7);
         msj ("Nombre del artículo: ", 2, ancho_formato-9) ;
         cin.getline(texto,25);
         x=ValidarTexto (texto);
@@ -126,7 +148,7 @@ void CargarArticulo (){
         anykey ();
         devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
         titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
-        borrar_renglon (7);
+        borrar_renglon (8);
         msj ("Código del artículo: ", 2, ancho_formato) ;
         cin >> x ;
         z=BuscarArticulo (x);
@@ -141,13 +163,13 @@ void CargarArticulo (){
         anykey ();
         devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
         titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
-        borrar_renglon (8);
+        borrar_renglon (9);
         msj ("Stock: ", 2, ancho_formato) ;
         cin >> x ;
     }
     reg.SetStock (x);
 
-    msj ("Valor de venta: ",2,ancho_formato);
+    msj ("Valor de venta: $",2,ancho_formato);
     cin >> y ;
     while (y<0){
         devolucion ("NO PUEDE TENER PRECIO NEGATIVO","ROJO",ancho_formato,alto_formato);
@@ -155,7 +177,7 @@ void CargarArticulo (){
         anykey ();
         devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
         titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
-        borrar_renglon (9);
+        borrar_renglon (10);
         msj ("Valor de venta: ", 2, ancho_formato) ;
         cin >> y ;
     }
@@ -165,8 +187,8 @@ void CargarArticulo (){
 
     cout << endl ;
     guiones (ancho_formato);
-    guiones (ancho_formato,14);
-    gotoxy (1,12);
+    guiones (ancho_formato,15);
+    gotoxy (1,13);
     msj ("¿Está seguro de guardar el artículo?",2,ancho_formato,"ROJO");
     msj ("(S/N): ",2,ancho_formato);
     cin >> opc ;
@@ -176,7 +198,7 @@ void CargarArticulo (){
         anykey ();
         devolucion ("CARGA DE ARTÍCULO", "VERDE",ancho_formato,alto_formato);
         titulo ("CARGA DE ARTÍCULO","VERDE",ancho_formato);
-        borrar_renglon (13);
+        borrar_renglon (14);
         msj ("(S/N): ",2,ancho_formato);
         cin >> opc ;
     }
@@ -233,57 +255,96 @@ bool GuardarArticulo (articulo reg, int pos){
 }
 
 void MostrarListaArticulos (){
-    articulo reg;
-    int cant=CantArt(), x, cont =8;
-    char texto[25];
-    if (cant<0){
-        devolucion ("OCURRIÓ UN ERROR", "ROJO", ancho_formato,alto_formato);
-        titulo ("OCURRIÓ UN ERROR", "ROJO", ancho_formato);
-        anykey ();
+    articulo *art ;
+    int cant_art=CantArt (), x, cont=8, aux;
+    char texto [25];
+    if (cant_art<0){
         return ;
     }
-
+    art = (articulo*) malloc (cant_art*sizeof(articulo));
+    if (art==NULL){
+        free (art);
+        return ;
+    }
     FILE *f;
-    f=fopen (ArchivoArticulo, "rb");
+    f = fopen (ArchivoArticulo, "rb");
     if (f==NULL){
+        free (art);
         return ;
     }
+    fread (art, sizeof(articulo),cant_art,f);
+    fclose (f);
+
+    OrdenarAritculos (art,cant_art);
+
     cls ();
     devolucion ("LISTA DE ARTÍCULOS", "VERDE", ancho_formato,alto_formato);
     titulo ("LISTA DE ARTÍCULOS", "VERDE", ancho_formato);
-    gotoxy (10,6);
-    cout << "        ARTÍCULO       | COD |  PRECIO  | STOCK  " << endl ;
-    gotoxy (10,7);
+    gotoxy (13,6);
+    cout << "       ARTÍCULOS       | COD |  PRECIO  | STOCK  " << endl ;
+    gotoxy (13,7);
     cout << "------------------------------------------------" << endl ;
-    for (x=0; x<cant ; x++){
-        if (cont==20){
+
+    aux = art[0].GetTipoArt();
+    gotoxy (1,cont);
+    cout << "Andadores" ;
+
+    for (x=0 ; x<cant_art ; x++){
+
+        if (cont== 20){
             anykey ();
             borrar_restopantalla (8);
-            cont = 8 ;
+            cont=8;
         }
-        fread (&reg, sizeof(articulo),1,f);
-        reg.GetNombre(texto);
-        gotoxy (10,cont);
+
+        if (aux!=art[x].GetTipoArt()){
+            gotoxy (13,cont);
+            cout << "------------------------------------------------" << endl ;
+            cont ++ ;
+            gotoxy (1,cont);
+            switch (art[x].GetTipoArt()){
+            case 2 : cout << "Camas" ;
+                break;
+            case 3: cout << "Bastones" ;
+                break;
+            case 4 : cout << "Sillas" ;
+                break ;
+            case 5 : cout << "Otros";
+                break ;
+            }
+        }
+
+        art[x].GetNombre(texto);
+        gotoxy (13,cont);
         cout << texto ;
-        gotoxy (33,cont);
-        cout << "| " << reg.GetCodArt() ;
-        gotoxy (39,cont);
-        cout << "| $" << reg.GetPrecio ();
-        gotoxy (50,cont);
-        cout << "| " << reg.GetStock ();
-        gotoxy (59, cont);
-        if (reg.GetEstado()==true){
+        gotoxy (36,cont);
+        cout << "| " << art[x].GetCodArt() ;
+        gotoxy (42,cont);
+        cout << "| $" << art[x].GetPrecio ();
+        gotoxy (53,cont);
+        cout << "| " << art[x].GetStock ();
+        gotoxy (62, cont);
+
+        if (art[x].GetStock()>6){
             setBackgroundColor(GREEN);
         }
         else {
-            setBackgroundColor(RED);
+            if (art[x].GetStock()>2){
+                setBackgroundColor (YELLOW);
+            }
+            else {
+                setBackgroundColor(RED);
+            }
         }
         cout << "   " ;
         setBackgroundColor (BLACK);
         cont ++ ;
+        aux = art[x].GetTipoArt ();
     }
+    gotoxy (13,cont);
+    cout << "------------------------------------------------" << endl ;
     anykey ();
-    fclose (f);
+
 }
 
 void MostrarUnArticulo (articulo reg){
@@ -327,6 +388,27 @@ void BuscarNombre (int pos, char* texto) { /// Recibe posicion y devuelve nombre
     reg.GetNombre (texto);
 }
 
+void OrdenarAritculos (articulo* art,int tam){
+    int x , y ;
+    articulo aux ;
+    for (x=0 ; x<tam ; x++){
+        for(y=0 ; y<tam-1 ; y++){
+            if (art[y].GetTipoArt()>= art[y+1].GetTipoArt()){
+                aux = art[y];
+                art[y] = art[y+1];
+                art[y+1] = aux;
+
+            }
+            if (art[y].GetTipoArt()==art[y+1].GetTipoArt()){
+                if (art[y].GetCodArt()>= art[y+1].GetCodArt()){
+                    aux = art[y];
+                    art[y] = art[y+1];
+                    art[y+1] = aux;
+                }
+            }
+        }
+    }
+}
 
 
 
@@ -341,6 +423,13 @@ articulo::~articulo (){
 
 }
 
+int articulo::GetTipoArt (){
+    return tipo_art ;
+}
+
+void articulo::SetTipoArt (int tipo){
+    tipo_art= tipo ;
+}
 
 void articulo::GetNombre (char*texto){
     strcpy (texto, nombre);
@@ -381,3 +470,4 @@ bool articulo::GetEstado (){
 void articulo::SetEstado (bool es){
     estado = es;
 }
+
