@@ -162,7 +162,6 @@ void menu_ventas (){
                                 anykey ();
                                 showcursor ();
 
-
                                 cli.SetAcumulado (-1* vta.GetValorVenta());
                                 GuardarCliente (cli,pos_cli);
 
