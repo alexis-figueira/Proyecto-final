@@ -8,6 +8,7 @@ using namespace rlutil ;
 #include "ventas.h"
 #include "detallevta.h"
 #include "articulo.h"
+#include "clientes.h"
 
 bool GuardarDetalle (detalle dle){
     FILE *f ;
@@ -135,15 +136,23 @@ void MostrarUnDetalle (detalle dle){ /// falta cambiar formato
     anykey ();
 }
 
-void MostrarDetalleVenta (int cant, detalle* dle,ventas vta){ /// falta hacer
+void MostrarDetalleVenta (int cant, detalle* dle,ventas vta, clientes cli){ /// falta hacer
     articulo art ;
-    int pos_art,x;
+    int pos_art,x, pos_cli;
     char texto [25];
     cls();
     devolucion ("DETALLE DE VENTA","MAGENTA",ancho_formato,alto_formato);
     titulo ("DETALLE DE VENTA", "MAGENTA",ancho_formato);
     gotoxy(1,7);
     msj ("VENTA ",2,ancho_formato-10,"VERDE");
+
+    gotoxy (1,3);
+    cli.GetApellido (texto);
+    gotoxy (ancho_formato/4,4);
+    cout << "Id: " << cli.GetId() << "   cliente: " << texto << "   DNI: " << cli.GetDni () ;
+
+
+
     gotoxy (38,7);
     setBackgroundColor(GREEN);
     cout << dle[0].GetNumVenta() << endl ;

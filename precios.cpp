@@ -10,7 +10,6 @@ using namespace rlutil;
 #include "clases.h"
 #include "precios.h"
 #include "articulo.h"
-//const char *ArchivoPrecios = "archivoprecios.dat" ;
 
 
 float ValorVenta (int cod_art, int cant_venta){

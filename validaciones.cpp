@@ -10,9 +10,6 @@ using namespace rlutil;
 #include "clases.h"
 
 
-
-
-
 int ValidarTexto (char* texto){
     if (texto[0]== ' ' || texto[0]==NULL){
         return 0 ;
@@ -37,7 +34,7 @@ int ValidarMail (char *texto){
     return 0 ;
 }
 
-int validarFecha(int d, int m, int y){
+int ValidarFecha(int d, int m, int y){
     int i;
     bool bisiesto = false;
     //comprobamos si el año es bisiesto
@@ -66,7 +63,7 @@ int validarFecha(int d, int m, int y){
 
 int validarEdad (int d, int m, int y, int ed){
     int edad ;
-    if (validarFecha(d,m,y)!=0){
+    if (ValidarFecha(d,m,y)!=0){
         return -0 ; /// fecha invalida
     }
     time_t tiempo;

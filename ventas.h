@@ -5,25 +5,18 @@
 bool NuevaVenta () ;
 
 bool GuardarVenta (ventas vta);
-
 bool GuardarVenta (ventas vta,int pos);
-
 int BuscarVenta (int);
-
-int CantVentas ();
-
 ventas LeerVenta (int);
-
-int ListarVentas () ;
-
-int ListarClientesPorMail (char *);
-
-int ListarClientesPorId (int);
-
-int ListarClientesPorDni (int);
-
 void MostrarVenta (ventas);
 
+int CantVentas ();
 float ValorVenta (int, int);
+
+int ListarVentas ();
+int ListarVentasPorFecha (fecha, int);
+int ListarClientesPorMail (char *);
+int ListarClientesPorId (int);
+int ListarClientesPorDni (int);
 
 #endif // VENTAS_H_INCLUDED

@@ -10,22 +10,6 @@ using namespace rlutil;
 #include "clases.h"
 #include "clientes.h"
 
-// const char *ArchivoClientes = "archivoclientes.dat" ;
-
-/*
-    class clientes{
-    private:
-        int id_cliente ;
-        char nombre [50];
-        char apellido [50];
-        int dni ;
-        char mail [50];
-        float acumulado ;
-        bool estado ;
-    public:
-    };
-*/
-
 int ObtenerIdCliente (){
     int id , pos_cli;
     srand (time(NULL));
@@ -43,13 +27,13 @@ void MenuVerCliente (){
     int id, pos ;
     clientes reg ;
     cls ();
-    devolucion ("VER CLIENTE", "AMARILLO",ancho_formato,alto_formato);
-    titulo ("VER CLIENTE","AMARILLO",ancho_formato);
+    devolucion ("VER CLIENTE", "VERDE",ancho_formato,alto_formato);
+    titulo ("VER CLIENTE","VERDE",ancho_formato);
     msj ("Ingrese número de cliente: ", 2,ancho_formato); cin >> id ;
     pos = BuscarCliente (id);
     if (pos==-2){
-        devolucion ("NO SE ENCONTRÓ EL NÚMERO DE CLIENTE", "AMARILLO",ancho_formato,alto_formato);
-        titulo ("NO SE ENCONTRÓ EL NÚMERO DE CLIENTE","AMARILLO",ancho_formato);
+        devolucion ("NO SE ENCONTRÓ EL NÚMERO DE CLIENTE", "ROJO",ancho_formato,alto_formato);
+        titulo ("NO SE ENCONTRÓ EL NÚMERO DE CLIENTE","ROJO",ancho_formato);
         anykey ();
         return ;
     }
@@ -110,7 +94,7 @@ int BuscarMail (char *mail){
     fread (reg,sizeof(clientes),cant,f);
     fclose (f);
 
-    for (x=0 ; x<=cant ; x++){
+    for (x=0 ; x<cant ; x++){
         reg[x].GetMail (texto);
         if (strcmp(mail, texto) == 0 ){
             pos = x ;
@@ -147,7 +131,7 @@ int BuscarCliente (int id){ /// YA ESTA
     fread (reg,sizeof(clientes),cant,f);
     fclose (f);
 
-    for (x=0 ; x<=cant ; x++){
+    for (x=0 ; x<cant ; x++){
         if (id==reg[x].GetId ()){
             pos = x ;
             free(reg);
@@ -166,13 +150,11 @@ int BuscarDni (int dni){ /// Recibe dni y devuelve posicion
     if (cant ==-1){
         return -1 ; /// error de lectura de archivos
     }
-
     reg = (clientes*) malloc (cant*sizeof(clientes));
     if (reg==NULL){
         free (reg);
         return -1; /// error con la memoria interna
     }
-
     FILE *f;
     f=fopen (ArchivoClientes, "rb") ;
     if (f==NULL){
@@ -180,15 +162,13 @@ int BuscarDni (int dni){ /// Recibe dni y devuelve posicion
     }
     fread (reg,sizeof(clientes),cant,f);
     fclose (f);
-
-    for (x=0 ; x<=cant ; x++){
+    for (x=0 ; x<cant ; x++){
         if (dni==reg[x].GetDni ()){
             pos = x ;
             free(reg);
             return pos ; /// DEVUELVE POSICION incluyendo 0
         }
     }
-
     free(reg);
     return pos = - 2 ; /// DEVUELVE -2 SI NO LO ENCUENTRA
 }
@@ -210,9 +190,9 @@ void MostrarCliente (clientes reg){ /// FALTA HACER
     cls ();
     char texto [50];
     cls ();
-    devolucion ("CLIENTE", "AMARILLO", ancho_formato, alto_formato) ;
+    devolucion ("CLIENTE", "VERDE", ancho_formato, alto_formato) ;
     guiones (ancho_formato,9);
-    titulo ("CLIENTE", "AMARILLO", ancho_formato) ;
+    titulo ("CLIENTE", "VERDE", ancho_formato) ;
 
     msj ("ID: ", 2,ancho_formato-3); cout << reg.GetId() << endl;
     reg.GetNombre (texto);
@@ -220,22 +200,37 @@ void MostrarCliente (clientes reg){ /// FALTA HACER
     reg.GetApellido (texto);
     msj ("Apellido: ", 2 ,ancho_formato-10) ; cout << texto << endl ;
     reg.GetMail (texto);
-    msj ("Mail: ", 2 ,ancho_formato-8) ; cout << texto << endl ;
+    msj ("Mail: ", 2 ,ancho_formato-14) ; cout << texto << endl ;
     msj ("Dni: ", 2 ,ancho_formato-8) ; cout << reg.GetDni() << endl;
     msj ("Acumulado: ", 2 ,ancho_formato-8) ; cout << reg.GetAcumulado() << endl;
-     gotoxy (ancho_formato-3,alto_formato-2);
-    if (reg.GetEstado()==true){
-        setBackgroundColor(GREEN);
-        cout << "    " ;
-    }else{
-        setBackgroundColor (RED);
-        cout << "    " ;
-    }
-    setBackgroundColor(BLACK);
+
     hidecursor ();
     anykey ();
     showcursor ();
+}
 
+clientes ClientesMasVentas (){
+    clientes cli (0), maxi (0);
+    int cont=0;
+    FILE *f ;
+    f = fopen (ArchivoClientes, "rb");
+    if (f==NULL){
+        return maxi; /// maxi con acumulado e id = 0
+    }
+
+    while (fread(&cli,sizeof(clientes),1,f)==1){
+        if (cont==0){
+            maxi = cli ;
+        }
+        else {
+            if (cli.GetAcumulado() > maxi.GetAcumulado ()){
+                maxi = cli ;
+            }
+        }
+        cont ++ ;
+    }
+    fclose (f);
+    return maxi ; // devuelve cliente maximo
 }
 
 int ListarClientes (){
@@ -262,8 +257,8 @@ int ListarClientes (){
     fclose (f);
 
     cls ();
-    devolucion ("LISTADO DE CLIENTES", "AMARILLO", ancho_formato, alto_formato) ;
-    titulo ("LISTADO DE CLIENTES", "AMARILLO", ancho_formato) ;
+    devolucion ("LISTADO DE CLIENTES", "VERDE", ancho_formato, alto_formato) ;
+    titulo ("LISTADO DE CLIENTES", "VERDE", ancho_formato) ;
     guiones (ancho_formato,19);
     gotoxy (1,x+7);
     msj (" ",2,ancho_formato,"AZUL");
@@ -278,10 +273,10 @@ int ListarClientes (){
             cont = 0 ;
             anykey ();
             borrar_restopantalla (cont+9);
-            devolucion ("LISTADO DE CLIENTES", "AMARILLO", ancho_formato, alto_formato) ;
+            devolucion ("LISTADO DE CLIENTES", "VERDE", ancho_formato, alto_formato) ;
             guiones (ancho_formato,19);
         }
-        //if (vec[x].GetEstado()==true) {
+        if (vec[x].GetEstado()==true) {
             gotoxy (2, cont+9);
             cout << vec[x].GetId ();
             gotoxy (6, cont+9);
@@ -296,7 +291,7 @@ int ListarClientes (){
             cout << "|   $" << vec[x].GetAcumulado ();
             cout << endl ;
             cont ++ ;
-        //}
+        }
     }
     anykey ();
     free (vec);
@@ -314,9 +309,7 @@ clientes LeerCliente (int pos){
     fread (&reg,sizeof (clientes), 1, f) ;
     fclose (f);
     return reg ;
-
 }
-
 
 ///-------------------------------------------------------------------------------------------------------------------
 

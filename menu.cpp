@@ -12,7 +12,7 @@ using namespace rlutil ;
 #include "config.h"
 #include "articulo.h"
 #include "detallevta.h"
-
+#include "validaciones.h"
 
 void AperturaArchivos (){
     FILE *f;
@@ -119,7 +119,7 @@ void menu_ventas (){
             ventas vta ;
             articulo art ;
             clientes cli ;
-            cls ();
+            cls () ;
             devolucion ("CANCELAR UNA VENTA","MAGENTA", ancho_formato, alto_formato);
             titulo ("CANCELAR UNA VENTA","MAGENTA", ancho_formato);
             gotoxy (1,alto_formato/2);
@@ -137,7 +137,9 @@ void menu_ventas (){
                 }else {
                     vta = LeerVenta (pos_vta);
                     cant_detalle = LeerTodoDetalle (vta.GetNumVenta(),det);
-                    MostrarDetalleVenta(cant_detalle, det, vta);
+                    pos_cli = BuscarCliente (vta.GetIdCliente());
+                    cli = LeerCliente (pos_cli);
+                    MostrarDetalleVenta(cant_detalle, det, vta,cli);
                     gotoxy (1, alto_formato-8);
                     msj ("¿Está seguro de eliminar esta venta?",2,ancho_formato,"ROJO"); cout << endl ;
                     msj ("(S/N): ",2,ancho_formato); cin >> opcion ;
@@ -160,8 +162,7 @@ void menu_ventas (){
                                 anykey ();
                                 showcursor ();
 
-                                pos_cli = BuscarCliente (vta.GetIdCliente());
-                                cli = LeerCliente (pos_cli);
+
                                 cli.SetAcumulado (-1* vta.GetValorVenta());
                                 GuardarCliente (cli,pos_cli);
 
@@ -199,15 +200,15 @@ void menu_ventas (){
                             break ;
                         }
                     }
-
-                    anykey ();
                 }
             }
         break ;}
         {case '3': /// Mostrar una venta
-            int id, x, cant_det;
+            int id, x, cant_det, pos,pos_cli;
+            char texto [25];
             ventas vta ;
             detalle dle [15];
+            clientes cli ;
             cls ();
             devolucion ("VENTA", "MAGENTA", ancho_formato, alto_formato) ;
             titulo ("VENTA", "MAGENTA", ancho_formato) ;
@@ -228,6 +229,10 @@ void menu_ventas (){
             }
 
             vta = LeerVenta (x);
+            pos_cli = BuscarCliente (vta.GetIdCliente());
+            cli = LeerCliente (pos_cli);
+
+
             if (vta.GetEstado()==false ){
                 devolucion ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato, alto_formato);
                 titulo ("NO SE ENCONTRÓ EL CÓDIGO DE LA VENTA","ROJO", ancho_formato);
@@ -235,7 +240,7 @@ void menu_ventas (){
                 return ;
             }
             cant_det = LeerTodoDetalle (vta.GetNumVenta(), dle);
-            MostrarDetalleVenta (cant_det,dle,vta);
+            MostrarDetalleVenta (cant_det,dle,vta,cli);
             break ;}
         {case '4': /// Listar ventas
             int x ;
@@ -394,13 +399,15 @@ void menu_stock (){
     }
 }
 
-void menu_clientes (){  ///
-    char opcion_menu ;
-    bool estado=true ;
+void menu_clientes (){
+    char opcion_menu, opc_2 ;
+    bool estado=true, grabo;
+    int dni, pos ;
+    clientes cli(0);
     while (estado==true){
         cls ();
-        devolucion ("CLIENTES","AMARILLO", ancho_formato, alto_formato);
-        titulo ("CLIENTES","AMARILLO", ancho_formato);
+        devolucion ("CLIENTES","VERDE", ancho_formato, alto_formato);
+        titulo ("CLIENTES","VERDE", ancho_formato);
         msj ("01. Ver cliente.", 2,ancho_formato); cout << endl ;
         msj ("02. Eliminar cliente.", 2, ancho_formato); cout << endl ;
         msj ("03. Listar clientes.", 2, ancho_formato); cout << endl ;
@@ -411,15 +418,64 @@ void menu_clientes (){  ///
         cin >> opcion_menu ;
         switch (opcion_menu) {
             case '1':
-                cls ();
-                devolucion ("CLIENTES","AMARILLO", ancho_formato, alto_formato);
-                titulo ("CLIENTES","AMARILLO", ancho_formato);
                 MenuVerCliente ();
             break ;
             case '2':
                 cls ();
-                cout << "Eliminar cliente";
-                anykey ();
+                devolucion ("CLIENTES","VERDE", ancho_formato, alto_formato);
+                titulo ("CLIENTES","VERDE", ancho_formato);
+                msj ("Ingrese dni de cliente: ", 2, ancho_formato);
+                cin >> dni ;
+                pos = BuscarDni (dni);
+
+                if (pos<0){
+                    devolucion ("NO SE ENCONTRÓ EL DNI EN LOS REGISTROS","ROJO", ancho_formato, alto_formato);
+                    titulo ("NO SE ENCONTRÓ EL DNI EN LOS REGISTROS","ROJO", ancho_formato);
+                    anykey ();
+                    return ;
+                }
+                cli = LeerCliente (pos);
+                cls ();
+                MostrarCliente (cli);
+                guiones(ancho_formato,15);
+                guiones(ancho_formato,12);
+                msj ("Está seguro de eliminar este cliente:", 2, ancho_formato,"ROJO"); cout << endl ;
+                msj ("(S/N): ", 2 ,ancho_formato);
+                cin >> opc_2 ;
+                while (opc_2 !='s' && opc_2 !='S' && opc_2 !='n' && opc_2 !='N'){
+                    devolucion ("CARÁCTER INCORRECTO","ROJO", ancho_formato, alto_formato);
+                    titulo ("CARÁCTER INCORRECTO","ROJO", ancho_formato);
+                    anykey ();
+                    devolucion ("CLIENTES","VERDE", ancho_formato, alto_formato);
+                    titulo ("CLIENTES","VERDE", ancho_formato);
+                    borrar_renglon (14);
+                    msj ("(S/N): ", 2 ,ancho_formato);
+                    cin >> opc_2 ;
+                }
+
+                if (opc_2 == 'n' || opc_2 == 'N'){
+                    cls ();
+                    devolucion ("","ROJO", ancho_formato, alto_formato);
+                    titulo ("","ROJO", ancho_formato);
+                    msj ("NO SE ELIMINÓ EL CLIENTE",2,ancho_formato,"ROJO") ;
+                    anykey();
+                    return ;
+                }
+                cli.SetEstado (false);
+                grabo = GuardarCliente (cli,pos);
+                if (grabo == false){
+                    cls ();
+                    devolucion ("OCURRIÓ UN ERROR AL ELIMINAR","ROJO", ancho_formato, alto_formato);
+                    titulo ("OCURRIÓ UN ERROR AL ELIMINAR","ROJO", ancho_formato);
+                    anykey();
+                    return ;
+                }
+                cls ();
+                devolucion ("","ROJO", ancho_formato, alto_formato);
+                titulo ("","ROJO", ancho_formato);
+                msj ("CLIENTE ELIMINADO",2,ancho_formato,"ROJO") ;
+                anykey();
+
             break ;
             case '3':
                 int x ;
@@ -661,9 +717,113 @@ void submenu_articulos (){
 }
 
 void menu_registros (){
-    cls ();
-    cout << "MENU REGISTROS";
-    anykey ();
+    int val;
+    char opcion_menu [5];
+    bool estado=true ;
+    while (estado==true){
+        clientes cli ;
+        fecha fec;
+        cls ();
+        devolucion ("REGISTROS","AZUL", ancho_formato, alto_formato);
+        titulo ("REGISTROS","AZUL", ancho_formato);
+
+        msj ("01. Listar Ventas de un dia.", 2,ancho_formato); cout << endl ;
+        msj ("02. Listar Ventas de un mes.", 2, ancho_formato); cout << endl ;
+        msj ("03. Cliente con mas compras.", 2 ,ancho_formato) ; cout << endl ;
+        msj ("04. Producto mas vendido.", 2, ancho_formato); cout << endl ;
+        msj ("05. Producto menos vendido", 2, ancho_formato); cout << endl ;
+        guiones (ancho_formato);
+
+        msj ("00. Volver atrás.", 2, ancho_formato, "ROJO"); cout << endl ;
+
+        guiones (ancho_formato);
+
+        msj ("Elija una opción: ", 2, ancho_formato) ;
+        cin >> opcion_menu ;
+        switch (*opcion_menu) {
+        case '1':
+            cls ();
+            devolucion ("REGISTROS","AZUL", ancho_formato, alto_formato);
+            titulo ("REGISTROS","AZUL", ancho_formato);
+            cout << endl << endl ;
+            msj ("Muestra de ventas de un día",2,ancho_formato,"AZUL"); cout << endl ;
+            msj ("Ingrese el día: ",2,ancho_formato) ; cin >> fec.dia ;
+            msj ("Ingrese el mes: ",2,ancho_formato) ; cin >> fec.mes ;
+            msj ("Ingrese el año: ",2,ancho_formato) ; cin >> fec.anio ;
+            val = ValidarFecha(fec.dia, fec.mes, fec.anio);
+            if (val==0){
+                devolucion ("FECHA INCORRECTA","ROJO", ancho_formato, alto_formato);
+                titulo ("FECHA INCORRECTA","ROJO", ancho_formato);
+                anykey ();
+            }
+            else {
+                val=ListarVentasPorFecha (fec,1);
+                if (val==-1){
+                    cls();
+                    devolucion ("NO SE REGISTRARON VENTAS ESE DÍA","ROJO", ancho_formato, alto_formato);
+                    titulo ("NO SE REGISTRARON VENTAS ESE DÍA","ROJO", ancho_formato);
+                    anykey ();
+                }
+                else {
+                    if(val==-2){
+                        cls();
+                        devolucion ("OCURRIÓ UN ERROR","ROJO", ancho_formato, alto_formato);
+                        titulo ("OCURRIÓ UN ERROR","ROJO", ancho_formato);
+                        anykey ();
+                    }
+                }
+            }
+            break;
+        case '2':
+            cls ();
+            devolucion ("REGISTROS","AZUL", ancho_formato, alto_formato);
+            titulo ("REGISTROS","AZUL", ancho_formato);
+            msj ("Muestra de ventas de un mes",2,ancho_formato,"AZUL"); cout << endl ;
+            msj ("Ingrese el mes: ",2,ancho_formato) ; cin >> fec.mes ;
+            msj ("Ingrese el año: ",2,ancho_formato) ; cin >> fec.anio ;
+            val = ValidarFecha(fec.dia, fec.mes, fec.anio);
+            if (val==0){
+                devolucion ("FECHA INCORRECTA","ROJO", ancho_formato, alto_formato);
+                titulo ("FECHA INCORRECTA","ROJO", ancho_formato);
+                anykey ();
+            }
+            else {
+                val=ListarVentasPorFecha (fec,2);
+                if (val==-1){
+                    cls ();
+                    devolucion ("NO SE REGISTRARON VENTAS ESE DÍA","ROJO", ancho_formato, alto_formato);
+                    titulo ("NO SE REGISTRARON VENTAS ESE DÍA","ROJO", ancho_formato);
+                    anykey ();
+                }
+                else {
+                    if(val==-2){
+                        cls ();
+                        devolucion ("OCURRIÓ UN ERROR","ROJO", ancho_formato, alto_formato);
+                        titulo ("OCURRIÓ UN ERROR","ROJO", ancho_formato);
+                        anykey ();
+                    }
+                }
+            }
+            break ;
+        case '3':
+            cls ();
+            devolucion ("VENTAS","AZUL", ancho_formato, alto_formato);
+            titulo ("VENTAS","AZUL", ancho_formato);
+            msj ("03. Cliente con mas compras.", 2 ,ancho_formato) ; cout << endl ;
+            cli = ClientesMasVentas ();
+            MostrarCliente (cli);
+            break;
+        case'4':
+            ArtMasVendido (1);
+            break;
+        case'5':
+            ArtMasVendido (2);
+            break ;
+        case '0':
+            estado = false ;
+            break ;
+        }
+    }
 }
 
 void menu_precios (){
@@ -734,13 +894,13 @@ void menu_precios (){
 
 }
 
-void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
+void menu_ajustes (){
     char opcion_menu, opcion ;
     bool estado=true, grabo, grabo1;
     while (estado==true){
         cls ();
-        devolucion ("AJUSTES","AMARILLO", ancho_formato, alto_formato);
-        titulo ("AJUSTES","AMARILLO", ancho_formato);
+        devolucion ("AJUSTES","AZUL", ancho_formato, alto_formato);
+        titulo ("AJUSTES","AZUL", ancho_formato);
 
         msj ("01. Eliminar ventas.", 2,ancho_formato); cout << endl ;
         msj ("02. Eliminar Articulos.", 2,ancho_formato); cout << endl ;
@@ -763,8 +923,8 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                 gotoxy (1,alto_formato/2);
                 msj ("ESTA SEGURO DE ELIMINAR LOS DATOS?(S/N): ",2,ancho_formato) ;cin >> opcion;
                 while (opcion !='s' && opcion !='S' && opcion !='N' && opcion !='n'){
-                    devolucion ("CARÁCTER INCORRECTO","BLANCO", ancho_formato, alto_formato);
-                    titulo ("CARÁCTER INCORRECTO","BLANCO", ancho_formato);
+                    devolucion ("CARÁCTER INCORRECTO","ROJO", ancho_formato, alto_formato);
+                    titulo ("CARÁCTER INCORRECTO","ROJO", ancho_formato);
                     anykey ();
                     cls ();
                     setColor (RED);
@@ -787,8 +947,8 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                         }
                         else {
                             cls ();
-                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato, alto_formato);
-                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato);
+                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","ROJO", ancho_formato, alto_formato);
+                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","ROJO", ancho_formato);
                             anykey ();
                         }
                     }
@@ -800,8 +960,8 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                 gotoxy (1,alto_formato/2);
                 msj ("ESTA SEGURO DE ELIMINAR LOS DATOS?(S/N): ",2,ancho_formato) ;cin >> opcion;
                 while (opcion !='s' && opcion !='S' && opcion !='N' && opcion !='n'){
-                    devolucion ("CARÁCTER INCORRECTO","BLANCO", ancho_formato, alto_formato);
-                    titulo ("CARÁCTER INCORRECTO","BLANCO", ancho_formato);
+                    devolucion ("CARÁCTER INCORRECTO","ROJO", ancho_formato, alto_formato);
+                    titulo ("CARÁCTER INCORRECTO","ROJO", ancho_formato);
                     anykey ();
                     cls ();
                     setColor (RED);
@@ -821,8 +981,8 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                         }
                         else {
                             cls ();
-                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato, alto_formato);
-                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato);
+                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","ROJO", ancho_formato, alto_formato);
+                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","ROJO", ancho_formato);
                             anykey ();
                         }
                     }
@@ -855,8 +1015,8 @@ void menu_ajustes (){ //TODO: CAMBIAR MENU AJUSTES BKP Y ESO
                         }
                         else {
                             cls ();
-                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato, alto_formato);
-                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","BLANCO", ancho_formato);
+                            devolucion ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","ROJO", ancho_formato, alto_formato);
+                            titulo ("OCURRIÓ UN ERROR AL ELIMINAR LOS DATOS","ROJO", ancho_formato);
                             anykey ();
                         }
                     }
@@ -887,8 +1047,8 @@ void menu_recuperar_datos (){
     bool estado=true, recupero, recupero1 ;
     while (estado==true){
         cls ();
-        devolucion ("BACKUP","AMARILLO", ancho_formato, alto_formato);
-        titulo ("BACKUP","AMARILLO", ancho_formato);
+        devolucion ("BACKUP","AZUL", ancho_formato, alto_formato);
+        titulo ("BACKUP","AZUL", ancho_formato);
 
         msj ("01. Recuperar datos de ventas.", 2,ancho_formato); cout << endl ;
         msj ("02. Recuperar datos de artículos.", 2,ancho_formato); cout << endl ;
@@ -911,14 +1071,14 @@ void menu_recuperar_datos (){
                     BorrarBkpVentas ();
                     BorrarBkpDetalle ();
                     cls ();
-                    devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
+                    devolucion ("SE RECUPERARON LOS DATOS","AZUL", ancho_formato, alto_formato);
+                    titulo ("SE RECUPERARON LOS DATOS","AZUL", ancho_formato);
                     anykey ();
                 }
                 else {
                     cls ();
-                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato);
+                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","ROJO", ancho_formato, alto_formato);
+                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","ROJO", ancho_formato);
                     anykey ();
 
                 }
@@ -928,14 +1088,14 @@ void menu_recuperar_datos (){
                 if(recupero==true){
                     BorrarBkpArticulo ();
                     cls ();
-                    devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
+                    devolucion ("SE RECUPERARON LOS DATOS","AZUL", ancho_formato, alto_formato);
+                    titulo ("SE RECUPERARON LOS DATOS","AZUL", ancho_formato);
                     anykey ();
                 }
                 else {
                     cls ();
-                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato);
+                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","ROJO", ancho_formato, alto_formato);
+                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","ROJO", ancho_formato);
                     anykey ();
 
                 }
@@ -945,14 +1105,14 @@ void menu_recuperar_datos (){
                 if(recupero==true){
                     BorrarBkpClientes ();
                     cls ();
-                    devolucion ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("SE RECUPERARON LOS DATOS","AMARILLO", ancho_formato);
+                    devolucion ("SE RECUPERARON LOS DATOS","AZUL", ancho_formato, alto_formato);
+                    titulo ("SE RECUPERARON LOS DATOS","AZUL", ancho_formato);
                     anykey ();
                 }
                 else {
                     cls ();
-                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato, alto_formato);
-                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","AMARILLO", ancho_formato);
+                    devolucion ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","ROJO", ancho_formato, alto_formato);
+                    titulo ("OCURRIÓ UN ERROR AL RECUPERAR LOS DATOS","ROJO", ancho_formato);
                     anykey ();
 
                 }

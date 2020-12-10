@@ -7,9 +7,6 @@ using namespace rlutil;
 #include "stock.h"
 #include "interfaz.h"
 #include "articulo.h"
-/// INTERFAZ VERDE
-
-
 
 void MenuAgregarStock (){
     int cod_art, cantidad, pos;

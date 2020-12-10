@@ -7,8 +7,6 @@ using namespace std;
 #include "rlutil.h"
 using namespace rlutil;
 #include "interfaz.h"
-///const int ancho_formato = 80, alto_formato=25 ;
-
 
 void initUI() {
     system("mode con: cols=80 lines=25");

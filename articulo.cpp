@@ -13,6 +13,7 @@ using namespace rlutil;
 #include "ventas.h"
 #include "stock.h"
 #include "validaciones.h"
+#include "detallevta.h"
 
 int CantArt (){ /// HECHA
     int bts, cant;
@@ -410,6 +411,82 @@ void OrdenarAritculos (articulo* art,int tam){
     }
 }
 
+void ArtMasVendido (int tipo){
+    int cant_art = CantArt ();
+    articulo art_max, art ;
+    int v_art [cant_art], v_cant [cant_art], x=0, cant_max,codart_max;
+    if (cant_art<=0){
+        return  ;
+    }
+
+    FILE *f ;
+    f = fopen (ArchivoArticulo, "rb");
+    if (f==NULL){
+        return ;
+    }
+    while (fread(&art,sizeof(articulo),1,f)==1){
+        v_art[x]= art.GetCodArt();
+        v_cant[x]= 0;
+        x ++ ;
+    }
+    fclose (f);
+
+    detalle dle ;
+    f = fopen(ArchivoDetalle,"rb");
+    if (f==NULL){
+        return ;
+    }
+    while (fread (&dle, sizeof(detalle),1,f)==1){
+        for (x=0 ; x<cant_art ; x++){
+            if (v_art[x] == dle.GetCodArt()){
+                v_cant [x] += dle.GetCantVenta();
+            }
+        }
+    }
+    for (x=0 ; x<cant_art ; x++){
+    if (x==0){
+            cant_max = v_cant[x];
+            codart_max = v_art [x];
+        }
+        else {
+            if (tipo==1){
+                if (v_cant[x]>cant_max){
+                    cant_max = v_cant[x];
+                    codart_max = v_art[x];
+                }
+            }
+            else {
+                if (v_cant[x]<cant_max){
+                    cant_max = v_cant[x];
+                    codart_max = v_art[x];
+                }
+            }
+        }
+    }
+    int pos_art;
+    pos_art = BuscarArticulo (codart_max);
+    art_max = LeerArticulo (pos_art);
+    char texto [25];
+    art_max.GetNombre (texto);
+    cls ();
+    if (tipo==1){
+        devolucion ("ARTÍCULO MÁS VENDIDO","AZUL",ancho_formato,alto_formato);
+        titulo("ARTÍCULO MÁS VENDIDO","AZUL",ancho_formato);
+    }
+    else {
+        devolucion ("ARTÍCULO MENOS VENDIDO","AZUL",ancho_formato,alto_formato);
+        titulo("ARTÍCULO MENOS VENDIDO","AZUL",ancho_formato);
+    }
+    gotoxy (1,(alto_formato/2)-3);
+    guiones (ancho_formato);
+    msj ("Articulo: ",2,ancho_formato-8); cout << texto << endl ;
+    msj ("Código: ",2,ancho_formato); cout << art_max.GetCodArt () << endl ;
+    msj ("Cantidad vendida: ",2,ancho_formato); cout << cant_max << endl ;
+    msj ("Precio actual: $", 2, ancho_formato); cout << art_max.GetPrecio () << endl ;
+    msj ("Stock: ", 2, ancho_formato); cout << art_max.GetStock () << endl ;
+    guiones (ancho_formato);
+    anykey ();
+}
 
 
 ///------------------------------------------------------------------------------------------------------------------------\\\
@@ -420,7 +497,6 @@ articulo::articulo (){
 }
 
 articulo::~articulo (){
-
 }
 
 int articulo::GetTipoArt (){

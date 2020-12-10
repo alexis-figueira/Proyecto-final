@@ -20,7 +20,7 @@ int ListarClientes ();
 bool GuardarClienteNuevo (clientes);
 bool GuardarCliente (clientes, int);
 
-
+clientes ClientesMasVentas ();
 
 
 

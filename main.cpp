@@ -16,16 +16,8 @@ using namespace rlutil ;
 #include "articulo.h"
 
 /**
-- VER PORQUE NO FUNCIONA 'MOSTRARLISTAARTICULOS1 '
-
-- TIPO DE ARTICULO: (1-Andador, 2-Cama, 3-Baston etc). Con la posibilidad de seguir agregando tipos ;
-
 - REGISTROS:
-    Mostrar por fecha
-    Mostrar cliente con mas gastos
     Mostrar cliente con menos gastos
-
-- VER BACK UP Y HACER LOS CAMBIOS
 */
 
 /**
@@ -44,7 +36,6 @@ using namespace rlutil ;
 int main(){
 
     initUI ();
-
     AperturaArchivos ();
     menu_principal ();
     cls ();

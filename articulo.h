@@ -29,4 +29,8 @@ bool GuardarArticulo (articulo);
 bool GuardarArticulo (articulo, int);
 
 void OrdenarAritculos (articulo*,int);
+
+void ArtMasVendido (int);
+
+
 #endif // ARTICULO_H_INCLUDED

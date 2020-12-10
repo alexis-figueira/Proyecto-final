@@ -15,7 +15,7 @@ int LeerTodoDetalle (int, detalle*); // recibe numero de venta y vector detalle,
 detalle LeerUnDetalle (int, int);
 
 void MostrarUnDetalle (detalle);
-void MostrarDetalleVenta (int cant, detalle* dle,ventas); /// falta hacer
+void MostrarDetalleVenta (int, detalle*,ventas,clientes); /// falta hacer
 
 void ListarDetalleVenta (int);
 

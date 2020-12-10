@@ -10,10 +10,6 @@ private:
     fecha fec_compra ;
     int num_venta ;
     int id_cliente ;
-    /*
-    int cod_art ;
-    int cant_venta ;
-    */
     float valor_venta ;
     bool estado ;
 
@@ -24,7 +20,6 @@ public:
     ~ventas ();
 
     void CancelarVenta ();
-
 
     int GetNumVenta ();
     void SetNumVenta (int);
@@ -39,6 +34,9 @@ public:
     void SetEstado (bool);
 
     void MostrarFechaVenta ();
+    int GetDia ();
+    int GetMes ();
+    int GetAnio ();
     void SetFecCompra (fecha);
 };
 
